@@ -8,50 +8,84 @@
 
 ## 1. Overview
 
-**Aarkam** is an autonomous, distributed, ultra-high-throughput object storage platform engineered specifically for mission-critical sovereign clouds, defense installations, national banking grids, and air-gapped enterprise datacenters.
+# Aarkam — Sovereign Distributed Object Storage
 
-Operating with **zero external telemetry egress** and **zero internet dependencies**, Aarkam combines mathematical Cauchy Reed-Solomon erasure coding ($99.999999999\%$ durability) with full Amazon S3 (SigV4) API compatibility.
+**Aarkam** is an autonomous, distributed, ultra-high-throughput object storage platform engineered for mission-critical sovereign clouds, defense installations, national banking grids, and air-gapped enterprise datacenters.
+
+Operating with **zero external telemetry egress** and **zero internet dependencies**, Aarkam combines Cauchy Reed-Solomon erasure coding with S3-compatible APIs using AWS Signature Version 4 (SigV4).
+
+## Architecture Overview
 
 ```mermaid
 flowchart TD
-    subgraph ClientLayer["Client Workloads & Ecosystem Applications"]
-        S3App["Enterprise Apps (Boto3, AWS SDKs, MinIO mc, AI Pipelines)"]
-        Operator["Datacenter Operator (Aarkam.AM CLI / am)"]
+    subgraph ClientLayer["Client Workloads and Applications"]
+        S3App["Enterprise Applications<br/>Boto3, AWS SDKs, MinIO mc, AI Pipelines"]
+        Operator["Datacenter Operator<br/>Aarkam.AM CLI - am"]
     end
 
     subgraph AarkamPlatform["Aarkam.IO Sovereign Storage Cluster"]
         direction TB
 
-        subgraph IngressTier["Ingress & Control Plane"]
-            AarkamIO["AarkamIO Service\n- S3 REST Gateway (8080/8443)\n- Web Management UI (5000/5001)\n- OpenID Connect & IAM RBAC"]
+        subgraph IngressTier["Ingress and Control Plane"]
+            AarkamIO["AarkamIO Service<br/>S3 REST Gateway - 8080 / 8443<br/>Web Management UI - 5000 / 5001<br/>OpenID Connect and IAM RBAC"]
         end
 
-        subgraph ConsensusTier["Consensus & Storage Tier"]
-            Rokka["Rokka Coordinator\n- Raft Distributed Consensus\n- Cluster Topology Sync\n- [Embedded] Ahmodi (Cauchy Reed-Solomon EC)"]
+        subgraph ConsensusTier["Consensus and Storage Tier"]
+            Rokka["Rokka Coordinator<br/>Raft Distributed Consensus<br/>Cluster Topology Synchronization<br/>Embedded Ahmodi - Cauchy Reed-Solomon"]
         end
 
-        subgraph NodeTier["Physical Storage Node Tier (Every Storage Host)"]
-            AbodiNode1["Node 1: Abodi Agent\n- NVMe SMART & Temperature\n- io_uring Direct I/O\n- [Embedded] Kdouja (Local Metadata LSM)"]
-            AbodiNode2["Node 2: Abodi Agent\n- NVMe SMART & Temperature\n- io_uring Direct I/O\n- [Embedded] Kdouja (Local Metadata LSM)"]
-            AbodiNodeN["Node N: Abodi Agent\n- NVMe SMART & Temperature\n- io_uring Direct I/O\n- [Embedded] Kdouja (Local Metadata LSM)"]
+        subgraph NodeTier["Physical Storage Node Tier"]
+            AbodiNode1["Node 1 - Abodi Agent<br/>NVMe SMART and Temperature<br/>io_uring Direct I/O<br/>Embedded Kdouja - Local Metadata LSM"]
+            AbodiNode2["Node 2 - Abodi Agent<br/>NVMe SMART and Temperature<br/>io_uring Direct I/O<br/>Embedded Kdouja - Local Metadata LSM"]
+            AbodiNodeN["Node N - Abodi Agent<br/>NVMe SMART and Temperature<br/>io_uring Direct I/O<br/>Embedded Kdouja - Local Metadata LSM"]
         end
     end
 
-    subgraph CustomerPortal["Aarkam Customer Portal (AarkamCP)"]
-        CP["https://aarkam.io/\n- Organization Subscriptions\n- Cluster Hardware Fingerprint Binding\n- Sovereign Genesis Ceremony Bundle (.arkbundle)"]
+    subgraph CustomerPortal["Aarkam Customer Portal - AarkamCP"]
+        CP["Aarkam Portal - aarkam.io<br/>Organization Subscriptions<br/>Cluster Hardware Fingerprint Binding<br/>Sovereign Genesis Bundle - arkbundle"]
     end
 
-    S3App -->|S3 REST API (SigV4)| AarkamIO
-    Operator -->|Management API| AarkamIO
-    Operator -->|Local Node Status| AbodiNode1
-    AarkamIO <-->|Internal gRPC| Rokka
-    Rokka <-->|Storage Fabric| AbodiNode1
-    Rokka <-->|Storage Fabric| AbodiNode2
-    Rokka <-->|Storage Fabric| AbodiNodeN
+    S3App -->|"S3 REST API - SigV4"| AarkamIO
+    Operator -->|"Management API"| AarkamIO
+    Operator -->|"Local Node Status"| AbodiNode1
 
-    AbodiNode1 -.->|Register ARK-FP-... Fingerprint| CP
-    CP -.->|Air-Gapped Genesis Bundle (.arkbundle)| AarkamIO
+    AarkamIO <-->|"Internal gRPC"| Rokka
+
+    Rokka <-->|"Storage Fabric"| AbodiNode1
+    Rokka <-->|"Storage Fabric"| AbodiNode2
+    Rokka <-->|"Storage Fabric"| AbodiNodeN
+
+    AbodiNode1 -.->|"Register Hardware Fingerprint"| CP
+    CP -.->|"Offline Genesis Bundle Provisioning"| AarkamIO
 ```
+
+## Core Components
+
+- **AarkamIO** — Application ingress, S3-compatible REST API, management UI, and identity integration.
+- **Rokka** — Distributed coordination, Raft consensus, and storage-cluster topology management.
+- **Ahmodi** — Hardware-accelerated Cauchy Reed-Solomon erasure coding.
+- **Abodi** — Storage-node agent responsible for node-level storage operations and hardware monitoring.
+- **Kdouja** — Local metadata storage engine.
+- **AarkamCP** — Customer portal for subscriptions, hardware fingerprint binding, and Genesis Bundle provisioning.
+
+## Sovereign Deployment Model
+
+Aarkam is designed to operate within customer-controlled infrastructure, including isolated and air-gapped environments. Initial provisioning can use an approved offline transfer mechanism to import the Genesis Bundle into the target cluster.
+
+The customer portal is not required to remain reachable during normal storage operations in a properly provisioned offline deployment.
+
+## Design Objectives
+
+- Data sovereignty and customer-controlled infrastructure.
+- No mandatory external telemetry or runtime internet dependency.
+- Distributed storage with erasure coding.
+- S3-compatible application integration using SigV4.
+- Local metadata and storage-node management.
+- Offline provisioning for isolated environments.
+- Centralized cluster coordination and topology management.
+
+*Architecture diagram represents the logical design; deployment-specific connectivity and component capabilities depend on the implemented configuration.*
+
 
 ---
 
