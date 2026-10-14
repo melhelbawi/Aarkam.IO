@@ -11,8 +11,8 @@ The **AarkamIO S3 Gateway** implements full protocol compliance with the standar
 
 ```mermaid
 flowchart LR
-    ClientApp["Enterprise Application (Python / Go / Java / .NET / Node)"] -->|AWS Signature Version 4 (SigV4)| S3Gateway["AarkamIO S3 Gateway (Ports: 8080 HTTP / 8443 HTTPS)"]
-    S3Gateway -->|Chunk Erasure Coding| StorageFabric["Rokka & Ahmodi Storage Mesh"]
+    ClientApp["Enterprise Application (Python / Go / Java / .NET / Node)"] -->|"AWS Signature Version 4 (SigV4)"| S3Gateway["AarkamIO S3 Gateway (Ports: 8080 HTTP / 8443 HTTPS)"]
+    S3Gateway -->|"Chunk Erasure Coding"| StorageFabric["Rokka & Ahmodi Storage Mesh"]
 ```
 
 ### Supported S3 Operations

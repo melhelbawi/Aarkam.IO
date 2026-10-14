@@ -1,0 +1,17 @@
+# Unpacked release working directories (only .zip archives are tracked)
+Releases/**/Aarkam.AM/
+Releases/**/AarkamIO/
+Releases/**/Abodi/
+Releases/**/Rokka/
+
+# IDE / Build Artifacts
+.vs/
+.idea/
+bin/
+obj/
+*.user
+*.suo
+
+# OS files
+.DS_Store
+Thumbs.db

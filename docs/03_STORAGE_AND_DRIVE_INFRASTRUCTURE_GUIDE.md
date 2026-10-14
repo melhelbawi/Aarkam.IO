@@ -23,8 +23,8 @@ flowchart TD
         HDDDrives["Enterprise SAS 7200 RPM Nearline Disks\n- 4Kn Format (18 TB - 24 TB)\n- Dual-Port SAS HBA in IT-Mode\n- Ahmodi Cauchy 8+4 Erasure Coding"]
     end
 
-    Ingress -->|High IOPS / Active Access| Tier1
-    Ingress -->|Archive / Large Bulk Data| Tier2
+    Ingress -->|"High IOPS / Active Access"| Tier1
+    Ingress -->|"Archive / Large Bulk Data"| Tier2
 ```
 
 ---

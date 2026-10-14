@@ -104,10 +104,10 @@ flowchart LR
     subgraph SecondaryDC["Secondary DR Datacenter (e.g. Jeddah Red Sea)"]
         direction TB
         S3DR["AarkamIO DR Cluster\n(Standby / Read-Only Mirror)"] --> DRStore["Ahmodi 4+2 EC Fleet"]
-        AppDR["Disaster Recovery Workloads"] -.->|On Failover| S3DR
+        AppDR["Disaster Recovery Workloads"] -.->|"On Failover"| S3DR
     end
 
-    PrimaryStore ==>|Encrypted TLS Replication Stream (Port 8443)| S3DR
+    PrimaryStore ==>|"Encrypted TLS Replication Stream (Port 8443)"| S3DR
 ```
 
 ### 4.1 Configuring Cross-Region Replication Policy

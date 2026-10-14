@@ -32,14 +32,14 @@ flowchart TD
         AbodiTelemetry["Abodi Node Health & Profiler\n(Port: 9400 TCP)"]
     end
 
-    S3Clients -->|Port 8443 HTTPS (SigV4)| FW1
-    AdminBrowsers -->|Port 5001 HTTPS| FW1
+    S3Clients -->|"Port 8443 HTTPS (SigV4)"| FW1
+    AdminBrowsers -->|"Port 5001 HTTPS"| FW1
     FW1 --> AarkamIOS3
     FW1 --> AarkamIOWeb
-    AarkamIOS3 <-->|Cluster Fabric| RokkaConsensus
-    RokkaConsensus <-->|Data & Placement| AhmodiData
-    RokkaConsensus <-->|Metadata Index| KdoujaMeta
-    AbodiTelemetry <-->|Health Alarms| RokkaConsensus
+    AarkamIOS3 <-->|"Cluster Fabric"| RokkaConsensus
+    RokkaConsensus <-->|"Data & Placement"| AhmodiData
+    RokkaConsensus <-->|"Metadata Index"| KdoujaMeta
+    AbodiTelemetry <-->|"Health Alarms"| RokkaConsensus
 ```
 
 ---

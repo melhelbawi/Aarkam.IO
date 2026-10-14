@@ -90,12 +90,12 @@ flowchart TD
 flowchart LR
     subgraph QuorumCluster["Rokka Consensus & Storage Mesh (Single or Multi-Cluster)"]
         direction TB
-        NodeA["Rokka Leader (Node A)\n+ Embedded Ahmodi Engine"] <-->|Raft RPC Consensus (Port 9100)| NodeB["Rokka Follower (Node B)\n+ Embedded Ahmodi Engine"]
-        NodeB <-->|Raft RPC Consensus (Port 9100)| NodeC["Rokka Follower (Node C)\n+ Embedded Ahmodi Engine"]
-        NodeC <-->|Raft RPC Consensus (Port 9100)| NodeA
+        NodeA["Rokka Leader (Node A)\n+ Embedded Ahmodi Engine"] <-->|"Raft RPC Consensus (Port 9100)"| NodeB["Rokka Follower (Node B)\n+ Embedded Ahmodi Engine"]
+        NodeB <-->|"Raft RPC Consensus (Port 9100)"| NodeC["Rokka Follower (Node C)\n+ Embedded Ahmodi Engine"]
+        NodeC <-->|"Raft RPC Consensus (Port 9100)"| NodeA
     end
 
-    QuorumCluster <-->|Cauchy RS EC Data Chunks (Port 9300)| DataNodes["Storage Nodes Fleet (Abodi / Disks)"]
+    QuorumCluster <-->|"Cauchy RS EC Data Chunks (Port 9300)"| DataNodes["Storage Nodes Fleet (Abodi / Disks)"]
 ```
 
 ### 3.1 Cluster Topologies & Node Count Requirements
