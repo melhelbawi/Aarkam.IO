@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Ahmodi</name>
+    </assembly>
+    <members>
+        <member name="T:Ahmodi.AhmodiCauchyCodec">
+            <summary>
+            High-performance Cauchy Reed-Solomon erasure codec implementing <see cref="T:Ahmodi.Contracts.IAhmodiCodec"/>.
+            Uses AVX2 / Vector128 SIMD vector kernels for encoding and mathematical reconstruction
+            of stripes across arbitrary chunk erasure patterns.
+            </summary>
+        </member>
+        <member name="P:Ahmodi.AhmodiCauchyCodec.Layout">
+            <summary>
+            Gets the geometric layout parameters governing this codec instance.
+            </summary>
+        </member>
+        <member name="P:Ahmodi.AhmodiCauchyCodec.CachedInverseMatrixCount">
+            <summary>
+            Gets the number of inverted sub-matrices currently cached for fast-path reconstruction.
+            </summary>
+        </member>
+        <member name="M:Ahmodi.AhmodiCauchyCodec.ClearInverseMatrixCache">
+            <summary>
+            Clears the cached inverted sub-matrices.
+            </summary>
+        </member>
+        <member name="M:Ahmodi.AhmodiCauchyCodec.#ctor(Ahmodi.Contracts.StripeLayout)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ahmodi.AhmodiCauchyCodec"/> class with specified geometric layout.
+            </summary>
+            <param name="layout">The stripe layout configuration.</param>
+        </member>
+        <member name="M:Ahmodi.AhmodiCauchyCodec.EncodeStripe(System.ReadOnlySpan{System.ReadOnlyMemory{System.Byte}},System.Span{System.Memory{System.Byte}})">
+            <summary>
+            Encodes a full stripe of K data chunks, generating M Cauchy Reed-Solomon parity chunks into the destination buffers.
+            </summary>
+            <param name="dataChunks">The K input data chunks, each of length <see cref="P:Ahmodi.Contracts.StripeLayout.ChunkSizeBytes"/>.</param>
+            <param name="parityChunks">The M destination buffers to receive the computed parity chunks, each of length <see cref="P:Ahmodi.Contracts.StripeLayout.ChunkSizeBytes"/>.</param>
+            <exception cref="T:System.ArgumentException">Thrown if spans have incorrect lengths or buffer sizes do not match <see cref="P:Ahmodi.Contracts.StripeLayout.ChunkSizeBytes"/>.</exception>
+        </member>
+        <member name="M:Ahmodi.AhmodiCauchyCodec.Reconstruct(System.ReadOnlySpan{System.ReadOnlyMemory{System.Byte}},System.ReadOnlySpan{System.Int32},System.Span{System.Memory{System.Byte}},System.ReadOnlySpan{System.Int32})">
+            <summary>
+            Reconstructs missing chunk payloads from an arbitrary subset of surviving chunks.
+            </summary>
+            <param name="survivingChunks">The surviving chunks available for recovery (must contain at least K chunks).</param>
+            <param name="survivingIndices">The 0-based stripe indices of each corresponding surviving chunk in <paramref name="survivingChunks"/>.</param>
+            <param name="targetChunks">Destination buffers to receive the reconstructed chunk payloads.</param>
+            <param name="targetIndices">The 0-based stripe indices of each target chunk to reconstruct in <paramref name="targetChunks"/>.</param>
+            <exception cref="T:System.ArgumentException">Thrown if fewer than K surviving chunks are provided, or if indices are invalid or duplicate.</exception>
+        </member>
+        <member name="M:Ahmodi.AhmodiCauchyCodec.CreateStandard4Plus2(System.Int32)">
+            <summary>
+            Factory creating standard profile: 4 Data + 2 Parity (survives 2 node/disk failures).
+            </summary>
+            <param name="chunkSizeBytes">Chunk size in bytes (default 1 MB).</param>
+            <returns>A configured <see cref="T:Ahmodi.AhmodiCauchyCodec"/>.</returns>
+        </member>
+        <member name="M:Ahmodi.AhmodiCauchyCodec.CreateArchival8Plus3(System.Int32)">
+            <summary>
+            Factory creating archival profile: 8 Data + 3 Parity (survives 3 node/disk failures).
+            </summary>
+            <param name="chunkSizeBytes">Chunk size in bytes (default 1 MB).</param>
+            <returns>A configured <see cref="T:Ahmodi.AhmodiCauchyCodec"/>.</returns>
+        </member>
+        <member name="M:Ahmodi.AhmodiCauchyCodec.CreateColdStorage16Plus4(System.Int32)">
+            <summary>
+            Factory creating cold storage profile: 16 Data + 4 Parity (survives 4 node/disk failures).
+            </summary>
+            <param name="chunkSizeBytes">Chunk size in bytes (default 1 MB).</param>
+            <returns>A configured <see cref="T:Ahmodi.AhmodiCauchyCodec"/>.</returns>
+        </member>
+        <member name="T:Ahmodi.CauchyMatrix">
+            <summary>
+            Provides creation and manipulation routines for Cauchy generator matrices over Galois Field GF(2^8).
+            Every square submatrix of a Cauchy matrix is mathematically guaranteed to be non-singular,
+            ensuring 100% data recoverability from any surviving K chunks.
+            </summary>
+        </member>
+        <member name="P:Ahmodi.CauchyMatrix.Rows">
+            <summary>
+            Gets the number of rows in the matrix.
+            </summary>
+        </member>
+        <member name="P:Ahmodi.CauchyMatrix.Columns">
+            <summary>
+            Gets the number of columns in the matrix.
+            </summary>
+        </member>
+        <member name="M:Ahmodi.CauchyMatrix.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ahmodi.CauchyMatrix"/> with specified dimensions.
+            </summary>
+            <param name="rows">Number of rows.</param>
+            <param name="columns">Number of columns.</param>
+        </member>
+        <member name="P:Ahmodi.CauchyMatrix.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets the field element at the specified row and column.
+            </summary>
+            <param name="row">Zero-based row index.</param>
+            <param name="col">Zero-based column index.</param>
+        </member>
+        <member name="M:Ahmodi.CauchyMatrix.Create(System.Int32,System.Int32)">
+            <summary>
+            Creates an M x K Cauchy generator matrix where C[i, j] = 1 / (X[i] ^ Y[j]).
+            Disjoint sets: X = [0..M-1], Y = [M..M+K-1].
+            </summary>
+            <param name="rows">Number of parity rows (M).</param>
+            <param name="cols">Number of data columns (K).</param>
+            <returns>The constructed <see cref="T:Ahmodi.CauchyMatrix"/>.</returns>
+        </member>
+        <member name="M:Ahmodi.CauchyMatrix.CreateSystematic(System.Int32,System.Int32)">
+            <summary>
+            Creates a full systematic (K + M) x K generator matrix where the top K x K block
+            is the Identity matrix and the bottom M x K block is the Cauchy generator matrix.
+            </summary>
+            <param name="dataChunks">The number of data chunks (K).</param>
+            <param name="parityChunks">The number of parity chunks (M).</param>
+            <returns>A (K + M) x K matrix.</returns>
+        </member>
+        <member name="M:Ahmodi.CauchyMatrix.ExtractRows(System.ReadOnlySpan{System.Int32})">
+            <summary>
+            Extracts a submatrix consisting of the specified rows across all columns.
+            </summary>
+            <param name="rowIndices">The row indices to extract.</param>
+            <returns>A new <see cref="T:Ahmodi.CauchyMatrix"/> containing the specified rows.</returns>
+        </member>
+        <member name="T:Ahmodi.MatrixInversion">
+            <summary>
+            Provides matrix inversion routines over Galois Field GF(2^8) using Gauss-Jordan elimination with partial pivoting.
+            </summary>
+        </member>
+        <member name="M:Ahmodi.MatrixInversion.Invert(Ahmodi.CauchyMatrix)">
+            <summary>
+            Inverts a square N x N matrix over GF(2^8).
+            </summary>
+            <param name="matrix">The square matrix to invert.</param>
+            <returns>A new <see cref="T:Ahmodi.CauchyMatrix"/> representing the inverse matrix.</returns>
+            <exception cref="T:System.ArgumentException">Thrown if the matrix is not square.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown if the matrix is singular (non-invertible).</exception>
+        </member>
+        <member name="T:Ahmodi.ThrottledReconstructionEngine">
+            <summary>
+            Dynamic traffic-shaping engine that governs background erasure reconstruction operations.
+            Integrates with <see cref="T:Kdouja.Primitives.IO.TokenBucketRateLimiter"/> to prevent background disk rebuilds from
+            saturating storage controllers and starving foreground client I/O. Automatically applies an exact
+            75% bandwidth reduction (40 MB/s -> 10 MB/s) when telemetry signals disk or node stress.
+            </summary>
+        </member>
+        <member name="F:Ahmodi.ThrottledReconstructionEngine.DefaultBaselineBandwidth">
+            <summary>
+            Default baseline reconstruction bandwidth allocation: 40 MB/s.
+            </summary>
+        </member>
+        <member name="F:Ahmodi.ThrottledReconstructionEngine.DefaultThrottledBandwidth">
+            <summary>
+            Default throttled reconstruction bandwidth allocation: 10 MB/s (75% reduction).
+            </summary>
+        </member>
+        <member name="P:Ahmodi.ThrottledReconstructionEngine.IsThrottled">
+            <summary>
+            Gets whether the reconstruction engine is currently operating in throttled mode.
+            </summary>
+        </member>
+        <member name="P:Ahmodi.ThrottledReconstructionEngine.CurrentBytesPerSecond">
+            <summary>
+            Gets the current active throughput ceiling in bytes per second.
+            </summary>
+        </member>
+        <member name="M:Ahmodi.ThrottledReconstructionEngine.#ctor(System.Int64,System.Int64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ahmodi.ThrottledReconstructionEngine"/> class.
+            </summary>
+            <param name="baselineBytesPerSecond">Baseline bandwidth allowed during normal system operations (default 40 MB/s).</param>
+            <param name="throttledBytesPerSecond">Throttled bandwidth enforced during drive stress (default 10 MB/s, 75% reduction).</param>
+        </member>
+        <member name="M:Ahmodi.ThrottledReconstructionEngine.SetDriveStress(System.Boolean)">
+            <summary>
+            Notifies the reconstruction engine of changes in drive stress telemetry or foreground load contention.
+            </summary>
+            <param name="hasStress">
+            <see langword="true"/> to engage the 75% throttle reduction (10 MB/s); <see langword="false"/> to restore baseline speed (40 MB/s).
+            </param>
+        </member>
+        <member name="M:Ahmodi.ThrottledReconstructionEngine.AcquireBandwidthAsync(System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Asynchronously acquires bandwidth tokens for the specified byte volume according to the active throttle state.
+            </summary>
+            <param name="bytes">Number of bytes to transfer or reconstruct.</param>
+            <param name="ct">Cancellation token.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.ValueTask"/> representing the asynchronous token acquisition delay.</returns>
+        </member>
+        <member name="M:Ahmodi.ThrottledReconstructionEngine.ReconstructThrottledAsync(Ahmodi.Contracts.IAhmodiCodec,System.ReadOnlyMemory{System.ReadOnlyMemory{System.Byte}},System.ReadOnlyMemory{System.Int32},System.Memory{System.Memory{System.Byte}},System.ReadOnlyMemory{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Executes a throttled reconstruction pass on the target chunks, enforcing I/O rate limits
+            before executing SIMD mathematical matrix decoding.
+            </summary>
+            <param name="codec">The Cauchy codec configured for the stripe layout.</param>
+            <param name="survivingChunks">The surviving chunks.</param>
+            <param name="survivingIndices">The indices of the surviving chunks.</param>
+            <param name="targetChunks">The destination memory buffers for reconstructed chunks.</param>
+            <param name="targetIndices">The indices of the target chunks to recover.</param>
+            <param name="ct">Cancellation token.</param>
+        </member>
+    </members>
+</doc>

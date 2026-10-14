@@ -1,0 +1,999 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Rokka.Infrastructure</name>
+    </assembly>
+    <members>
+        <member name="T:Rokka.Infrastructure.Diagnostics.RdmaHealthScoreBridge">
+            <summary>
+            Aggregates and bridges RDMA hardware latency percentiles (P50, P90, P99) and completion queue errors
+            into node health scoring to optimize peer placement, hedged reads, and healing workflows.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Diagnostics.RdmaHealthScoreBridge.Instance">
+            <summary>
+            Gets the shared singleton instance of the health score bridge.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Diagnostics.RdmaHealthScoreBridge.NodeRdmaSnapshot">
+            <summary>
+            Snapshot of evaluated RDMA latency percentiles and error metrics for a storage node.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaHealthScoreBridge.NodeRdmaSnapshot.#ctor(System.String,System.Double,System.Double,System.Double,System.Int64,System.Int64,System.Double,System.DateTime)">
+            <summary>
+            Snapshot of evaluated RDMA latency percentiles and error metrics for a storage node.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaHealthScoreBridge.RecordOperation(System.String,System.Double,System.Boolean,System.String)">
+            <summary>
+            Records the latency and status of an RDMA transfer (Read or Write).
+            Automatically updates diagnostic metrics and OpenTelemetry counters.
+            </summary>
+            <param name="nodeAddress">Network address of the remote storage node.</param>
+            <param name="elapsedMicroseconds">Measured round-trip transfer time in microseconds.</param>
+            <param name="success">Whether the RDMA operation completed successfully.</param>
+            <param name="errorReason">Optional error reason if the transfer failed.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaHealthScoreBridge.GetCompositeScore(System.String)">
+            <summary>
+            Computes the RDMA-adjusted health score penalty for the given node in milliseconds.
+            Lower scores indicate fast, responsive, error-free RDMA paths.
+            </summary>
+            <param name="nodeAddress">Storage node address.</param>
+            <returns>Computed latency score in milliseconds.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaHealthScoreBridge.GetSnapshot(System.String)">
+            <summary>
+            Retrieves a detailed snapshot of RDMA latency percentiles for the specified node.
+            </summary>
+            <param name="nodeAddress">Storage node address.</param>
+            <returns>Snapshot with P50, P90, P99 percentiles.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaHealthScoreBridge.Reset">
+            <summary>
+            Resets all tracked node metrics. Intended for unit testing.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter">
+            <summary>
+            High-performance OpenTelemetry and Prometheus metrics exporter for the Aarkam RDMA subsystem.
+            Tracks hardware DMA bandwidth, completion queue wait times, error rates, and memory pool utilization.
+            </summary>
+        </member>
+        <member name="F:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter.MeterName">
+            <summary>
+            Meter name for OpenTelemetry discovery.
+            </summary>
+        </member>
+        <member name="F:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter.MeterVersion">
+            <summary>
+            Subsystem instrumentation version.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter.Meter">
+            <summary>
+            Gets the shared singleton Meter instance for OpenTelemetry provider registration.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter.RegisterMemoryPool(Rokka.Contracts.Rdma.IRdmaMemoryPool)">
+            <summary>
+            Binds the active unmanaged RDMA memory pool to the utilization gauge.
+            </summary>
+            <param name="pool">The memory pool to monitor.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter.RecordWriteBytes(System.Int64,System.String)">
+            <summary>
+            Records transmitted bytes from an RDMA Write operation.
+            </summary>
+            <param name="bytes">Number of bytes written.</param>
+            <param name="nodeId">Optional target node identifier tag.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter.RecordReadBytes(System.Int64,System.String)">
+            <summary>
+            Records received bytes from an RDMA Read operation.
+            </summary>
+            <param name="bytes">Number of bytes read.</param>
+            <param name="nodeId">Optional source node identifier tag.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter.RecordWcError(System.String,System.String)">
+            <summary>
+            Records an RDMA work completion error event.
+            </summary>
+            <param name="reason">Failure status or error reason description.</param>
+            <param name="nodeId">Optional peer node identifier tag.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter.RecordCqSpinWait(System.Double)">
+            <summary>
+            Records nanoseconds spent in completion queue micro-spin backoff before completion or yield.
+            </summary>
+            <param name="spinWaitNs">Nanoseconds spent polling.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter.ToPrometheusMetrics">
+            <summary>
+            Generates standard Prometheus text-format scrape output for all tracked RDMA metrics.
+            </summary>
+            <returns>Prometheus exposition format string.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Diagnostics.RdmaMetricsExporter.ResetForTesting">
+            <summary>
+            Resets all accumulated raw counters. Primarily intended for automated test harnesses.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Persistence.AarkamMetadataStore">
+            <summary>
+            Implements the cluster state store using the underlying <see cref="T:Kdouja.Abstractions.CoreEngine.IKdoujaKV"/> LSM-tree database.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Persistence.AarkamMetadataStore.#ctor(Kdouja.Abstractions.CoreEngine.IKdoujaKV)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rokka.Infrastructure.Persistence.AarkamMetadataStore"/> class.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Persistence.AarkamMetadataStore.SaveNodeAsync(Rokka.Coordinator.Application.Domain.NodeRegistryInfo)">
+            <inheritdoc />
+        </member>
+        <member name="M:Rokka.Infrastructure.Persistence.AarkamMetadataStore.GetNodeAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Rokka.Infrastructure.Persistence.AarkamMetadataStore.GetAllNodesAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:Rokka.Infrastructure.Persistence.AarkamMetadataStore.DeleteNodeAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Rokka.Infrastructure.Persistence.MetadataJsonContext">
+            <summary>
+            Source-generated JsonSerializerContext for NodeRegistryInfo to support trim-safety.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Persistence.MetadataJsonContext.NodeRegistryInfo">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Persistence.MetadataJsonContext.NodeState">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Persistence.MetadataJsonContext.Int32">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Persistence.MetadataJsonContext.Int64">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Persistence.MetadataJsonContext.String">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Persistence.MetadataJsonContext.Default">
+            <summary>
+            The default <see cref="T:System.Text.Json.Serialization.JsonSerializerContext"/> associated with a default <see cref="T:System.Text.Json.JsonSerializerOptions"/> instance.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Persistence.MetadataJsonContext.GeneratedSerializerOptions">
+            <summary>
+            The source-generated options associated with this context.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Persistence.MetadataJsonContext.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:Rokka.Infrastructure.Persistence.MetadataJsonContext.#ctor(System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Rokka.Infrastructure.Persistence.MetadataJsonContext.GetTypeInfo(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Configuration.TransportSelectionMode">
+            <summary>
+            Operational mode governing network transport selection.
+            </summary>
+        </member>
+        <member name="F:Rokka.Infrastructure.Rdma.Configuration.TransportSelectionMode.Auto">
+            <summary>
+            Dynamically probes host hardware and remote node capabilities.
+            Uses RDMA zero-copy if supported, or silently falls back to standard gRPC/TCP with zero exceptions.
+            Recommended default for all production deployments.
+            </summary>
+        </member>
+        <member name="F:Rokka.Infrastructure.Rdma.Configuration.TransportSelectionMode.Disabled">
+            <summary>
+            Forces standard gRPC over TCP/IP across all operations, completely disabling RDMA code paths.
+            Useful for debugging, staging environments, or network troubleshooting.
+            </summary>
+        </member>
+        <member name="F:Rokka.Infrastructure.Rdma.Configuration.TransportSelectionMode.Forced">
+            <summary>
+            Enforces strict RDMA execution. Throws an exception at boot if RDMA hardware or drivers are absent.
+            Designed for high-performance supercomputing (HPC) or low-latency AI clusters with strict SLAs.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Configuration.TransportOptions">
+            <summary>
+            Configuration options binding for the Aarkam RDMA transport subsystem.
+            </summary>
+        </member>
+        <member name="F:Rokka.Infrastructure.Rdma.Configuration.TransportOptions.SectionName">
+            <summary>
+            Configuration section key within appsettings.json.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Configuration.TransportOptions.Mode">
+            <summary>
+            Gets or sets the transport selection mode. Default is <see cref="F:Rokka.Infrastructure.Rdma.Configuration.TransportSelectionMode.Auto"/>.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Configuration.TransportOptions.SlotSizeBytes">
+            <summary>
+            Gets or sets the size in bytes of each pinned memory slot. Default is 4MB (4,194,304 bytes).
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Configuration.TransportOptions.SlotCount">
+            <summary>
+            Gets or sets the total number of pre-registered memory slots. Default is 256 slots (1GB total pool).
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Configuration.TransportOptions.DeviceName">
+            <summary>
+            Gets or sets the specific HCA device name to bind (e.g. "mlx5_0", "rxe0").
+            If null or empty, the first active device is automatically selected.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Configuration.TransportOptions.Port">
+            <summary>
+            Gets or sets the physical HCA port number. Default is 1.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Configuration.TransportOptions.GidIndex">
+            <summary>
+            Gets or sets the RoCEv2 GID index on the specified port. Default is 0 (or 3 on Mellanox RoCEv2).
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Configuration.TransportOptions.EnableHugePages">
+            <summary>
+            Gets or sets a value indicating whether Linux HugeTLB (2MB) pages should be requested.
+            Falls back to standard aligned memory if HugeTLB is unavailable.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Configuration.TransportOptions.CircuitBreakerFailureThreshold">
+            <summary>
+            Gets or sets the failure threshold before tripping the circuit breaker to gRPC fallback.
+            Default is 3 consecutive failures.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Configuration.TransportOptions.CompletionTimeoutMs">
+            <summary>
+            Gets or sets the timeout duration in milliseconds for completion queue polling before declaring a stall.
+            Default is 5000ms.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionResult">
+            <summary>
+            Result of an asynchronous RDMA Work Completion reaped from the Completion Queue.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue">
+            <summary>
+            High-performance busy-polling Completion Queue (CQ) engine with adaptive micro-spinbackoff.
+            Dispatches work completions to async awaiters with sub-microsecond latency and handles
+            incoming immediate data events from remote peers.
+            </summary>
+        </member>
+        <member name="E:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue.ImmediateReceived">
+            <summary>
+            Occurs when an inbound RDMA Write with Immediate Data or Receive Work Request is reaped.
+            Parameters: (ImmediatePayload, WrId, ByteLength).
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue.CqHandle">
+            <summary>
+            Gets the native Completion Queue handle (ibv_cq*).
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue.QueueDepth">
+            <summary>
+            Gets the capacity of the completion queue in entries.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue.#ctor(System.IntPtr,System.Int32,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue"/> class.
+            </summary>
+            <param name="cqHandle">Native Completion Queue pointer.</param>
+            <param name="queueDepth">Maximum number of entries the CQ can hold.</param>
+            <param name="ownsHandle">True if this instance should destroy the native CQ upon disposal.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue.StartPolling">
+            <summary>
+            Starts the dedicated low-latency completion polling thread.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue.StopPolling">
+            <summary>
+            Stops the dedicated completion polling thread.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue.AwaitCompletionAsync(System.UInt64,System.Threading.CancellationToken)">
+            <summary>
+            Registers an asynchronous awaiter for a specific Work Request ID (wr_id).
+            </summary>
+            <param name="wrId">Unique 64-bit Work Request identifier.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>A task that completes when the corresponding completion is reaped from hardware.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue.PollBatch(System.Span{Rokka.Infrastructure.Rdma.Native.IbVerbsNative.IbvWc})">
+            <summary>
+            Manually polls the completion queue for a single batch of work completions.
+            </summary>
+            <param name="wcBuffer">Destination buffer for reaped completions.</param>
+            <returns>Number of completions reaped.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Driver.RdmaConnection">
+            <summary>
+            Encapsulates a native Reliable Connected (RC) Queue Pair (QP).
+            Manages the full state machine lifecycle (RESET -> INIT -> RTR -> RTS)
+            and executes hardware-accelerated zero-copy DMA writes and reads.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.QpHandle">
+            <summary>
+            Gets the native Queue Pair pointer (ibv_qp*).
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.State">
+            <summary>
+            Gets the current lifecycle state of the Queue Pair.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.CompletionQueue">
+            <summary>
+            Gets the Completion Queue associated with this Queue Pair.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.LocalEndpoint">
+            <summary>
+            Gets the local endpoint descriptor representing this QP for control plane handshakes.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.#ctor(System.IntPtr,System.UInt32,Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue,System.Byte,System.Byte,System.UInt16,System.Byte[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rokka.Infrastructure.Rdma.Driver.RdmaConnection"/> class.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.Initialize">
+            <summary>
+            Transitions the Queue Pair from RESET to INIT state.
+            Configures port binding and local/remote access permissions.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.Connect(Rokka.Contracts.Rdma.RdmaEndpointDescriptor)">
+            <summary>
+            Connects this Queue Pair to the remote peer's endpoint descriptor,
+            transitioning through RTR (Ready to Receive) and RTS (Ready to Send).
+            </summary>
+            <param name="remote">The remote peer's endpoint descriptor exchanged over control plane.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.PostWriteWithImmediateAsync(System.UInt64,System.UInt32,System.UInt32,System.UInt64,System.UInt32,System.UInt32,System.Threading.CancellationToken)">
+            <summary>
+            Executes a zero-copy RDMA Write with 32-bit Immediate Data to the remote peer's registered memory.
+            </summary>
+            <param name="localAddress">Local virtual memory address.</param>
+            <param name="length">Length in bytes to transfer.</param>
+            <param name="lkey">Local memory registration key.</param>
+            <param name="remoteAddress">Remote destination virtual memory address.</param>
+            <param name="rkey">Remote memory authorization key.</param>
+            <param name="immediateData">32-bit immediate data payload.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Asynchronous completion result.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.PostReadAsync(System.UInt64,System.UInt32,System.UInt32,System.UInt64,System.UInt32,System.Threading.CancellationToken)">
+            <summary>
+            Executes a zero-copy one-sided RDMA Read fetching data directly from the remote peer's memory.
+            </summary>
+            <param name="localAddress">Local virtual memory address destination.</param>
+            <param name="length">Length in bytes to fetch.</param>
+            <param name="lkey">Local memory registration key.</param>
+            <param name="remoteAddress">Remote source virtual memory address.</param>
+            <param name="rkey">Remote memory authorization key.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Asynchronous completion result.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.PostReceive(System.UInt64,System.UInt32,System.UInt32,System.UInt64)">
+            <summary>
+            Posts a Receive Work Request (ibv_post_recv) onto this Queue Pair.
+            Essential for arming the receiver to absorb incoming immediate data or two-sided messages.
+            </summary>
+            <param name="localAddress">Optional local buffer address.</param>
+            <param name="length">Buffer length.</param>
+            <param name="lkey">Local memory key.</param>
+            <param name="wrId">Custom Work Request ID.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaConnection.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain">
+            <summary>
+            Encapsulates the host channel adapter (HCA) execution context and Protection Domain (PD).
+            Responsible for hardware initialization, zero-copy memory registration (ibv_reg_mr),
+            and factory creation of Queue Pairs and Completion Queues.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain.ContextHandle">
+            <summary>
+            Gets the native HCA context handle (ibv_context*).
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain.PdHandle">
+            <summary>
+            Gets the native Protection Domain handle (ibv_pd*).
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain.DeviceName">
+            <summary>
+            Gets the active HCA device name.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain.Open(System.String)">
+            <summary>
+            Opens the specified HCA device and creates an isolated Protection Domain.
+            </summary>
+            <param name="preferredDeviceName">Optional name of the preferred HCA device (e.g. "mlx5_0").</param>
+            <returns>An initialized <see cref="T:Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain"/>.</returns>
+            <exception cref="T:System.PlatformNotSupportedException">Thrown when RDMA hardware is not supported or accessible.</exception>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain.RegisterMemoryPool(Rokka.Contracts.Rdma.IRdmaMemoryPool,Rokka.Infrastructure.Rdma.Native.IbvAccessFlags)">
+            <summary>
+            Registers the unmanaged memory backing an <see cref="T:Rokka.Contracts.Rdma.IRdmaMemoryPool"/> with the HCA,
+            generating local and remote access authorization keys (LKey / RKey).
+            </summary>
+            <param name="pool">The memory pool to register.</param>
+            <param name="accessFlags">Hardware access permissions.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain.CreateCompletionQueue(System.Int32)">
+            <summary>
+            Creates a native Completion Queue associated with this device context.
+            </summary>
+            <param name="queueDepth">Maximum number of completion entries (default: 1024).</param>
+            <returns>A managed <see cref="T:Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue"/> instance.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain.CreateQueuePair(Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue,System.Byte,System.Byte,System.Int32,System.Int32)">
+            <summary>
+            Creates a Reliable Connected (RC) Queue Pair associated with this Protection Domain.
+            </summary>
+            <param name="completionQueue">The Completion Queue to bind for send and receive completions.</param>
+            <param name="portNum">Physical HCA port number (default: 1).</param>
+            <param name="gidIndex">RoCEv2 GID index on the specified port (default: 0).</param>
+            <param name="maxWr">Maximum outstanding Work Requests on Send and Receive queues.</param>
+            <param name="maxSge">Maximum Scatter/Gather elements per Work Request.</param>
+            <returns>An initialized <see cref="T:Rokka.Infrastructure.Rdma.Driver.RdmaConnection"/> in RESET state.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Memory.LinuxHugePageAllocator">
+            <summary>
+            Native memory allocator utilizing Linux HugeTLB (2MB / 1GB) pages via Posix mmap and madvise.
+            Guarantees locked, TLB-cache-optimized unmanaged physical buffers for zero-copy RDMA operations.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Memory.LinuxHugePageAllocator.Allocate(System.Int64,System.Boolean@)">
+            <summary>
+            Attempts to allocate HugeTLB pinned memory on Linux.
+            Falls back gracefully if HugeTLB pages are not configured in the host kernel.
+            </summary>
+            <param name="size">Total allocation size in bytes (should be 2MB aligned).</param>
+            <param name="isHugePage">True if HugeTLB 2MB pages were successfully mapped, false otherwise.</param>
+            <returns>Pointer to allocated unmanaged memory, or IntPtr.Zero if allocation failed.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Memory.LinuxHugePageAllocator.Free(System.IntPtr,System.Int64)">
+            <summary>
+            Releases unmanaged memory allocated via mmap.
+            </summary>
+            <param name="address">Memory address returned by Allocate.</param>
+            <param name="size">Size of the mapped buffer in bytes.</param>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool">
+            <summary>
+            High-performance unmanaged pinned memory pool supporting hardware DMA registration and lock-free slot leasing.
+            Pre-allocates a contiguous block of aligned physical memory partitioned into fixed-size chunks,
+            eliminating Garbage Collection (GC) pauses and runtime memory registration overhead on the I/O fast path.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.BaseAddress">
+            <inheritdoc/>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.TotalCapacityBytes">
+            <inheritdoc/>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.SlotSizeBytes">
+            <inheritdoc/>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.SlotCount">
+            <inheritdoc/>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.AvailableSlotCount">
+            <inheritdoc/>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.IsHugePageBacked">
+            <inheritdoc/>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.LKey">
+            <inheritdoc/>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.RKey">
+            <inheritdoc/>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool"/> class with the specified slot parameters.
+            </summary>
+            <param name="slotSizeBytes">Size in bytes of each individual slot (default: 4MB).</param>
+            <param name="slotCount">Total number of slots to pre-allocate (default: 256).</param>
+            <param name="preferHugePages">Whether to attempt OS HugeTLB (Linux) or Large Pages (Windows) before falling back to aligned native memory.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.SetHardwareKeys(System.UInt32,System.UInt32)">
+            <summary>
+            Configures the hardware memory keys (LKey / RKey) assigned by the HCA during memory registration.
+            </summary>
+            <param name="lkey">Local memory key.</param>
+            <param name="rkey">Remote memory key.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.RentSlot">
+            <inheritdoc/>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.ReturnSlot(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Memory.RdmaMemoryPool.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Memory.WindowsLargePageAllocator">
+            <summary>
+            Native memory allocator utilizing Windows Large Pages (2MB) via Win32 VirtualAlloc.
+            Pre-allocates pinned physical pages backed by the Windows kernel without page fault interrupts.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Memory.WindowsLargePageAllocator.LargePageMinimum">
+            <summary>
+            Returns the minimum size of a large page on the current Windows host (typically 2MB), or 0 if unsupported.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Memory.WindowsLargePageAllocator.Allocate(System.Int64,System.Boolean@)">
+            <summary>
+            Attempts to allocate Large Page unmanaged memory on Windows.
+            Requires SeLockMemoryPrivilege in Windows user rights assignment.
+            Falls back to standard VirtualAlloc if large page privileges are absent.
+            </summary>
+            <param name="size">Total allocation size in bytes.</param>
+            <param name="isLargePage">True if MEM_LARGE_PAGES succeeded, false if standard pages were used.</param>
+            <returns>Pointer to unmanaged memory block, or IntPtr.Zero on failure.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Memory.WindowsLargePageAllocator.Free(System.IntPtr)">
+            <summary>
+            Releases memory allocated via VirtualAlloc.
+            </summary>
+            <param name="address">Base address returned by Allocate.</param>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.IbvAccessFlags">
+            <summary>
+            Verbs memory access permission flags used during Memory Region (MR) registration.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.IbvWrOpcode">
+            <summary>
+            Work Request (WR) operation codes.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.IbvSendFlags">
+            <summary>
+            Work Request send execution flags.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.IbvWcStatus">
+            <summary>
+            Work Completion (WC) status codes returned by ibv_poll_cq.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.IbvQpState">
+            <summary>
+            Queue Pair (QP) state machine states.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.IbvQpType">
+            <summary>
+            Transport service type for Queue Pairs.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.IbvQpAttrMask">
+            <summary>
+            Mask bits identifying which attributes are being configured during ibv_modify_qp.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.IbvMtu">
+            <summary>
+            Path Maximum Transmission Unit (MTU) enums.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.IbVerbsNative">
+            <summary>
+            Low-level 64-bit P/Invoke bindings and native structure definitions for Linux libibverbs (libibverbs.so.1).
+            Provides kernel-bypass DMA registration, Queue Pair lifecycle management, and work completion polling.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.NativeLibraryLoader">
+            <summary>
+            Cross-platform dynamic native library resolver and symbol invoker.
+            Guarantees safe loading of platform-specific RDMA provider binaries without process aborts.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Native.NativeLibraryLoader.IsLoaded">
+            <summary>
+            Gets a value indicating whether the target native library was loaded successfully.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Native.NativeLibraryLoader.Handle">
+            <summary>
+            Gets the native library handle.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Native.NativeLibraryLoader.TryOpen(System.String,Rokka.Infrastructure.Rdma.Native.NativeLibraryLoader@)">
+            <summary>
+            Attempts to dynamically load a native library by name or path.
+            </summary>
+            <param name="libraryName">Name or path of the library (e.g. "libibverbs.so.1", "mswsock.dll").</param>
+            <param name="loader">The resulting loader instance if successful, or null.</param>
+            <returns>True if loaded successfully, false otherwise.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Native.NativeLibraryLoader.GetExport``1(System.String)">
+            <summary>
+            Resolves an exported symbol address as a typed delegate.
+            </summary>
+            <typeparam name="TDelegate">Delegate signature.</typeparam>
+            <param name="exportName">Name of the exported C function.</param>
+            <returns>The delegate instance, or null if symbol is not found.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Native.NativeLibraryLoader.Dispose">
+            <summary>
+            Releases the native library handle.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Native.NetworkDirectNative">
+            <summary>
+            COM interface definitions and structures for Windows NetworkDirect v2 (NDv2) SPI.
+            Provides user-mode zero-copy direct memory access on Windows Server environments via WinOF-2.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Negotiation.TransportNegotiatorServiceImp">
+            <summary>
+            Server-side gRPC implementation of <see cref="T:Rokka.Contracts.Protos.TransportNegotiatorService.TransportNegotiatorServiceBase"/>.
+            Enables dynamic capability negotiation between Rokka clients and Kdouja storage daemons,
+            safely agreeing on RDMA (RoCEv2/Verbs/ND) or falling back to standard gRPC/TCP.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Negotiation.TransportNegotiatorServiceImp.#ctor(Rokka.Infrastructure.Rdma.Configuration.TransportOptions,Rokka.Contracts.Rdma.IRdmaMemoryPool,Rokka.Infrastructure.Rdma.Driver.RdmaProtectionDomain,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rokka.Infrastructure.Rdma.Negotiation.TransportNegotiatorServiceImp"/> class.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Negotiation.TransportNegotiatorServiceImp.NegotiateTransport(Rokka.Contracts.Protos.TransportHandshakeRequest,Grpc.Core.ServerCallContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Probes.LinuxSysfsScanner">
+            <summary>
+            Scans the Linux sysfs hierarchy (/sys/class/infiniband) to enumerate HCA adapters,
+            active physical ports, link layer protocols (InfiniBand vs Ethernet/RoCE), and RoCEv2 GID tables.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Probes.LinuxSysfsScanner.EnumerateDevices">
+            <summary>
+            Enumerates all discovered InfiniBand / RoCE HCA device names in sysfs.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Probes.LinuxSysfsScanner.GetPortState(System.String,System.Byte)">
+            <summary>
+            Reads the state of a specific port on an HCA device (e.g. "ACTIVE", "DOWN").
+            </summary>
+            <param name="deviceName">HCA device name (e.g. "mlx5_0").</param>
+            <param name="port">Physical port number (typically 1 or 2).</param>
+            <returns>Port state string, or "DOWN" if unavailable.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Probes.LinuxSysfsScanner.ReadGid(System.String,System.Byte,System.Byte)">
+            <summary>
+            Reads the 16-byte RoCEv2 GID entry at the specified index for an HCA device and port.
+            </summary>
+            <param name="deviceName">HCA device name.</param>
+            <param name="port">Physical port number.</param>
+            <param name="gidIndex">GID index (typically 0 or 3 for RoCEv2).</param>
+            <returns>Formatted IPv6 / RoCE GID string, or string.Empty if not found.</returns>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Probes.RdmaHardwareProbe">
+            <summary>
+            Probes host hardware, operating system, and native drivers for RDMA capabilities.
+            Employs safe dynamic library loading (<see cref="T:System.Runtime.InteropServices.NativeLibrary"/>) to guarantee
+            that non-RDMA machines (such as developer laptops, standard VMs, or bare-metal servers
+            without Mellanox cards) never throw <see cref="T:System.DllNotFoundException"/> or crash at startup.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Probes.RdmaHardwareProbe.IsHardwareSupported">
+            <summary>
+            Gets a value indicating whether hardware RDMA (or Soft-RoCE emulation) is operational on this host.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Probes.RdmaHardwareProbe.DiscoveredDevices">
+            <summary>
+            Gets the list of active RDMA device names discovered on this host (e.g. "mlx5_0", "rxe0").
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Probes.RdmaHardwareProbe.DiagnosticMessage">
+            <summary>
+            Gets a diagnostic message detailing the outcome of the hardware probe.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Target.Ingestion.DirectIoWalCommitter">
+            <summary>
+            Direct-I/O WAL and chunk committer. Flushes chunk payloads directly from
+            sector-aligned pinned unmanaged memory slots to NVMe storage without intermediate
+            kernel page cache buffering (O_DIRECT on Linux, FILE_FLAG_NO_BUFFERING on Windows).
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Target.Ingestion.DirectIoWalCommitter.StorageDirectory">
+            <summary>
+            Gets the base directory where WAL and chunk files are persisted.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Ingestion.DirectIoWalCommitter.#ctor(System.String,System.Boolean,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rokka.Infrastructure.Rdma.Target.Ingestion.DirectIoWalCommitter"/> class.
+            </summary>
+            <param name="storageDirectory">Target directory for persistent chunk storage.</param>
+            <param name="useDirectIo">Whether to enforce hardware Direct-I/O flags.</param>
+            <param name="logger">Optional logger.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Ingestion.DirectIoWalCommitter.CommitChunkAsync(System.Int64,System.IntPtr,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Persists a chunk payload directly from an unmanaged memory address to disk.
+            </summary>
+            <param name="pageId">Unique 64-bit page identifier.</param>
+            <param name="unmanagedAddress">Base address of the 4KB-aligned unmanaged memory slot.</param>
+            <param name="lengthBytes">Actual payload length in bytes.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Asynchronous task representing the durable disk write.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Ingestion.DirectIoWalCommitter.ReadChunkAsync(System.Int64,System.IntPtr,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Reads a persisted chunk from disk directly into a destination unmanaged memory slot.
+            </summary>
+            <param name="pageId">Unique page identifier.</param>
+            <param name="destinationAddress">Target unmanaged buffer address.</param>
+            <param name="bufferCapacity">Maximum capacity of the target buffer.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Actual number of bytes read.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Ingestion.DirectIoWalCommitter.GetChunkFilePath(System.Int64)">
+            <summary>
+            Gets the absolute filesystem path for a chunk by its page ID.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Ingestion.DirectIoWalCommitter.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Target.Ingestion.RdmaChunkValidator">
+            <summary>
+            Validates incoming zero-copy RDMA chunk payloads, memory boundaries,
+            envelope preambles (12-byte IV + 16-byte AES-GCM Tag), and CRC32C integrity checksums.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Ingestion.RdmaChunkValidator.ValidateEnvelope(System.ReadOnlySpan{System.Byte},System.Int32,System.Int32@)">
+            <summary>
+            Validates the chunk envelope preamble and returns the inner ciphertext payload length.
+            </summary>
+            <param name="chunkSpan">Direct unmanaged span over the memory slot.</param>
+            <param name="totalBytes">Total bytes received via RDMA immediate work completion.</param>
+            <param name="payloadLength">Calculated ciphertext payload length.</param>
+            <returns>True if the envelope structure is valid; false otherwise.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Ingestion.RdmaChunkValidator.ComputeCrc32c(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Computes the hardware-accelerated CRC32 checksum of the chunk payload.
+            </summary>
+            <param name="data">Memory span over the chunk.</param>
+            <returns>32-bit CRC32 checksum.</returns>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget">
+            <summary>
+            Target daemon running on Kdouja storage nodes.
+            Listens to RDMA work completion queues, validates incoming zero-copy payloads,
+            flushes chunks directly to NVMe storage via Direct-IO WAL committer, and manages slot recycling.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.LeaseManager">
+            <summary>
+            Gets the slot lease manager.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.WalCommitter">
+            <summary>
+            Gets the Direct-IO WAL committer.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.CompletionQueue">
+            <summary>
+            Gets the completion queue.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.Connection">
+            <summary>
+            Gets the RDMA connection, if bound.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.IsRunning">
+            <summary>
+            Gets a value indicating whether the target daemon is running and actively processing completions.
+            </summary>
+        </member>
+        <member name="E:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.ChunkCommitted">
+            <summary>
+            Event raised when a chunk is successfully validated and committed to storage.
+            Parameters: (PageId, ChunkIndex, LengthBytes).
+            </summary>
+        </member>
+        <member name="E:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.ChunkCommitFailed">
+            <summary>
+            Event raised when an incoming chunk fails validation or disk commit.
+            Parameters: (SlotToken, ErrorReason).
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.#ctor(Rokka.Infrastructure.Rdma.Target.SlotLeaseManager,Rokka.Infrastructure.Rdma.Target.Ingestion.DirectIoWalCommitter,Rokka.Infrastructure.Rdma.Driver.RdmaCompletionQueue,Rokka.Infrastructure.Rdma.Driver.RdmaConnection,System.Boolean,Microsoft.Extensions.Logging.ILogger{Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget"/> class.
+            </summary>
+            <param name="leaseManager">Slot lease manager for unmanaged RDMA staging buffers.</param>
+            <param name="walCommitter">Zero-copy Direct-IO disk committer.</param>
+            <param name="completionQueue">High-performance completion queue.</param>
+            <param name="connection">Optional native RDMA Queue Pair connection.</param>
+            <param name="validateEnvelope">Whether to enforce 28-byte preamble envelope validation (IV + Auth Tag).</param>
+            <param name="logger">Optional logger.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.Start(System.Int32)">
+            <summary>
+            Starts the RDMA target daemon: subscribes to immediate completions and starts CQ polling.
+            </summary>
+            <param name="prePostReceives">Number of initial receive work requests to post on the Queue Pair.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.Stop">
+            <summary>
+            Stops the target daemon.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.ProcessImmediateAsync(Rokka.Contracts.Rdma.RdmaImmediatePayload,System.UInt32,System.Threading.CancellationToken)">
+            <summary>
+            Processes an inbound RDMA immediate completion: validates the slot lease, verifies payload integrity,
+            persists to disk via Direct-IO, and releases the slot.
+            </summary>
+            <param name="payload">Bit-packed immediate data payload.</param>
+            <param name="byteLength">Reported bytes written by the HCA.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>True if successfully validated and committed; false otherwise.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.KdoujaRdmaTarget.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Target.Services.KdoujaRdmaControlService">
+            <summary>
+            gRPC control plane service for leasing RDMA staging memory windows and managing slot lifecycles.
+            Implements <see cref="T:Rokka.Contracts.Protos.RdmaSlotControlService.RdmaSlotControlServiceBase"/>.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Target.Services.KdoujaRdmaControlService.LeaseManager">
+            <summary>
+            Gets the slot lease manager.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Target.Services.KdoujaRdmaControlService.WalCommitter">
+            <summary>
+            Gets the Direct-IO WAL committer, if configured.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Services.KdoujaRdmaControlService.#ctor(Rokka.Infrastructure.Rdma.Target.SlotLeaseManager,Rokka.Infrastructure.Rdma.Target.Ingestion.DirectIoWalCommitter,Microsoft.Extensions.Logging.ILogger{Rokka.Infrastructure.Rdma.Target.Services.KdoujaRdmaControlService})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rokka.Infrastructure.Rdma.Target.Services.KdoujaRdmaControlService"/> class.
+            </summary>
+            <param name="leaseManager">Slot lease manager for unmanaged RDMA staging buffers.</param>
+            <param name="walCommitter">Direct-IO WAL committer for chunk reading/writing.</param>
+            <param name="logger">Optional logger.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Services.KdoujaRdmaControlService.RequestWriteSlot(Rokka.Contracts.Protos.LeaseWriteSlotRequest,Grpc.Core.ServerCallContext)">
+            <summary>
+            Leases an unmanaged memory slot for inbound RDMA Write staging.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Services.KdoujaRdmaControlService.RequestReadSlot(Rokka.Contracts.Protos.LeaseReadSlotRequest,Grpc.Core.ServerCallContext)">
+            <summary>
+            Leases an unmanaged memory slot for outbound RDMA Read staging, pre-populating it from disk.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.Services.KdoujaRdmaControlService.ReleaseSlot(Rokka.Contracts.Protos.ReleaseSlotRequest,Grpc.Core.ServerCallContext)">
+            <summary>
+            Explicitly releases an active memory slot lease.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Target.SlotLeaseType">
+            <summary>
+            Type of memory slot lease.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Target.StagingSlotLease">
+            <summary>
+            Encapsulates an active unmanaged memory slot lease for remote client RDMA operations.
+            </summary>
+        </member>
+        <member name="T:Rokka.Infrastructure.Rdma.Target.SlotLeaseManager">
+            <summary>
+            Manages lifecycle, leasing, remote authorization windows, and timeout recovery for RDMA memory slots.
+            Implements a background watchdog daemon that guarantees abandoned or crashed client leases are safely recycled.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Target.SlotLeaseManager.MemoryPool">
+            <summary>
+            Gets the underlying memory pool.
+            </summary>
+        </member>
+        <member name="P:Rokka.Infrastructure.Rdma.Target.SlotLeaseManager.ActiveLeaseCount">
+            <summary>
+            Gets the number of currently active slot leases.
+            </summary>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.SlotLeaseManager.#ctor(Rokka.Contracts.Rdma.IRdmaMemoryPool,System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rokka.Infrastructure.Rdma.Target.SlotLeaseManager"/> class.
+            </summary>
+            <param name="memoryPool">The unmanaged pinned memory pool.</param>
+            <param name="leaseTimeout">Maximum lease lifespan before automatic reclamation (default: 30s).</param>
+            <param name="watchdogInterval">Interval between timeout scans (default: 5s).</param>
+            <param name="logger">Optional logger.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.SlotLeaseManager.LeaseWriteSlot(System.Int64,System.Int32)">
+            <summary>
+            Leases an unmanaged memory slot for inbound RDMA Write staging.
+            </summary>
+            <param name="pageId">Target page identifier.</param>
+            <param name="sizeBytes">Expected chunk payload size in bytes.</param>
+            <returns>An active <see cref="T:Rokka.Infrastructure.Rdma.Target.StagingSlotLease"/>.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.SlotLeaseManager.LeaseReadSlot(System.Int64,System.Int32)">
+            <summary>
+            Leases an unmanaged memory slot for outbound RDMA Read staging.
+            </summary>
+            <param name="pageId">Target page identifier.</param>
+            <param name="lengthBytes">Size of data populated into the slot.</param>
+            <returns>An active <see cref="T:Rokka.Infrastructure.Rdma.Target.StagingSlotLease"/>.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.SlotLeaseManager.TryGetLease(System.UInt16,Rokka.Infrastructure.Rdma.Target.StagingSlotLease@)">
+            <summary>
+            Attempts to retrieve an active lease by its token.
+            </summary>
+            <param name="slotToken">The unique slot token.</param>
+            <param name="lease">The resulting lease, or null if not found.</param>
+            <returns>True if lease was found, false otherwise.</returns>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.SlotLeaseManager.ReleaseSlot(System.UInt16)">
+            <summary>
+            Releases an active lease and returns the underlying memory slot back to the pool.
+            </summary>
+            <param name="slotToken">The slot token to release.</param>
+        </member>
+        <member name="M:Rokka.Infrastructure.Rdma.Target.SlotLeaseManager.Dispose">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

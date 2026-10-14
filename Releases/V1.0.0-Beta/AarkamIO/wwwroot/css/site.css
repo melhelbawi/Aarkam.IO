@@ -1,0 +1,892 @@
+@font-face {
+    font-family: 'IBM Plex Sans Arabic';
+    src: url('/fonts/IBMPlexSansArabic-Medium.ttf') format('truetype');
+    font-weight: 100 900;
+}
+
+/* Root theme variables — single source of truth for all design tokens */
+:root {
+    /* ── Dashboard UI Style Guide Tokens ───────── */
+    --bg-app: linear-gradient(180deg, #EAF2FB 0%, #F6FAFD 100%);
+    --bg-app-solid: #EAF2FB;
+    --bg-card: #FFFFFF;
+    --bg-sidebar: #1A2B45;
+    --bg-sidebar-active: rgba(23, 133, 99, 0.15);
+    --accent-primary: #178563;
+    --accent-primary-hover: #136e52;
+    --accent-secondary: #3B6FE5;
+    --accent-navy: #1E3A5F;
+    --text-primary: #1F2937;
+    --text-secondary: #8A93A6;
+    --text-inverse: #FFFFFF;
+    --text-inverse-muted: #9AA8C0;
+    --border-subtle: #E7EDF5;
+    --radius-card: 18px;
+    --shadow-card: 0 8px 24px rgba(20, 40, 80, 0.06);
+    --shadow-card-hover: 0 14px 32px rgba(20, 40, 80, 0.10);
+
+    /* ── Harmonized Brand & Accent Tokens ─────── */
+    --ksa-green: var(--accent-primary);
+    --ksa-green-light: #22a77d;
+    --ksa-green-dark: var(--accent-navy);
+    --ksa-dark-green: var(--accent-navy);
+    --ksa-green-main: var(--accent-primary);
+    --ksa-green-mid: var(--accent-primary);
+    --ksa-green-hover: var(--accent-primary-hover);
+    --ksa-green-vivid: var(--accent-primary);
+
+    /* ── Brand & Neutral ────────────────────────── */
+    --ksa-red-soft: #ef4444;
+    --ksa-blue: var(--accent-secondary);
+    --ksa-bg: #EAF2FB;
+    --ksa-surface: #ffffff;
+    --ksa-text-dark: var(--text-primary);
+    --ksa-border: var(--border-subtle);
+    --ksa-border-light: #f0f4f8;
+
+    /* ── Layout ─────────────────────────────────── */
+    --header-height: 68px;
+    --ksa-sidebar-width: 230px;
+    --ksa-sidebar-collapsed-width: 72px;
+
+    /* ── Z-Index Stack ──────────────────────────── */
+    --z-toggle: 1100;
+    --z-sidebar: 1200;
+    --z-navbar: 1300;
+    --z-dropdown: 1500;
+    --z-toaster: 9999;
+    --z-session: 2147483647;
+
+    /* ── Shadows ────────────────────────────────── */
+    --ksa-shadow-sm: 0 2px 8px rgba(20, 40, 80, 0.04);
+    --ksa-shadow-md: 0 8px 24px rgba(20, 40, 80, 0.06);
+    --ksa-shadow-lg: 0 16px 36px rgba(20, 40, 80, 0.10);
+
+    /* ── Border Radius ──────────────────────────── */
+    --ksa-radius-sm: 0.5rem;
+    --ksa-radius-md: 0.75rem;
+    --ksa-radius-lg: 1.125rem;
+    --ksa-radius-pill: 999px;
+
+    /* ── Transition ─────────────────────────────── */
+    --ksa-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ── Monitoring / Indigo Palette ────────────── */
+    --indigo: #6366f1;
+    --indigo-dark: #4f46e5;
+    --indigo-soft: #818cf8;
+    --purple: #a855f7;
+    --amber: #f59e0b;
+    --yellow: #eab308;
+    --red-vivid: #ef4444;
+    --orange: #f97316;
+    --green-vivid: #22c55e;
+    --blue-vivid: #3b82f6;
+    --slate: #64748b;
+    --slate-dark: #1e293b;
+
+    /* ── SharedLink Dark Palette ────────────────── */
+    --sl-bg-start: #1e1b4b;
+    --sl-bg-end: #0f172a;
+    --sl-surface: rgba(30, 41, 59, 0.45);
+    --sl-border: rgba(255, 255, 255, 0.08);
+    --sl-text: #f8fafc;
+    --sl-text-muted: #94a3b8;
+}
+
+html, body {
+    font-family: 'Inter', 'Manrope', 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-app);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    font-size: .875rem;
+    min-height: 100vh;
+}
+/* =======================================
+   PrimeVue TreeSelect - Custom Theme
+   ======================================= */
+
+.p-treeselect {
+    --p-treeselect-background: #fff;
+    --p-treeselect-color: #212529;
+    --p-treeselect-placeholder-color: #6c757d;
+    --p-treeselect-border-color: #ced4da;
+    --p-treeselect-hover-border-color: #86b7fe;
+    --p-treeselect-focus-border-color: #86b7fe;
+    --p-treeselect-focus-ring-color: rgba(13, 110, 253, 0.25);
+    --p-treeselect-focus-ring-width: 0.25rem;
+    --p-treeselect-focus-ring-style: solid;
+    --p-treeselect-border-radius: 0.375rem; /* Bootstrap rounded */
+    --p-treeselect-padding-x: 0.75rem;
+    --p-treeselect-padding-y: 0.375rem;
+    --p-treeselect-transition-duration: 0.15s;
+    background: var(--p-treeselect-background);
+    color: var(--p-treeselect-color);
+    border: 1px solid var(--p-treeselect-border-color);
+    border-radius: var(--p-treeselect-border-radius);
+    padding: var(--p-treeselect-padding-y) var(--p-treeselect-padding-x);
+    transition: all var(--p-treeselect-transition-duration) ease;
+    display: flex;
+    align-items: center;
+    position: relative;
+    min-height: 42px;
+}
+
+    /* Hover & Focus */
+    .p-treeselect:hover {
+        border-color: var(--p-treeselect-hover-border-color);
+    }
+
+    .p-treeselect.p-focus {
+        border-color: var(--p-treeselect-focus-border-color);
+        box-shadow: 0 0 0 var(--p-treeselect-focus-ring-width) var(--p-treeselect-focus-ring-color);
+    }
+
+    /* Placeholder */
+    .p-treeselect .p-placeholder {
+        color: var(--p-treeselect-placeholder-color);
+    }
+
+/* Label text */
+.p-treeselect-label-container {
+    flex: 1;
+    overflow: hidden;
+}
+
+.p-treeselect-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Dropdown trigger arrow */
+.p-treeselect-dropdown {
+    width: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+/* Red Clear (X) Button */
+.p-select-clear-icon {
+    position: absolute;
+    inset-inline-end: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #dc3545 !important;
+    font-size: 1rem;
+    transition: color 0.25s ease;
+}
+
+    .p-select-clear-icon:hover {
+        color: #b02a37 !important;
+    }
+
+/* Overlay (menu) */
+.p-treeselect-overlay,
+.p-treeselect-panel {
+    --p-treeselect-overlay-background: #ffffff;
+    --p-treeselect-overlay-border-color: #dee2e6;
+    --p-treeselect-overlay-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    --p-treeselect-overlay-border-radius: 0.5rem;
+    background: var(--p-treeselect-overlay-background);
+    border: 1px solid var(--p-treeselect-overlay-border-color);
+    border-radius: var(--p-treeselect-overlay-border-radius);
+    box-shadow: var(--p-treeselect-overlay-shadow);
+    padding: 0.5rem;
+    min-width: 220px;
+    z-index: 10000 !important;
+}
+
+/* Tree nodes */
+.p-treeselect-tree-container {
+    max-height: 18rem;
+    overflow-y: auto;
+    padding: 0.25rem 0.5rem;
+}
+
+.p-tree-node-content {
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    transition: background-color 0.15s ease;
+}
+
+    .p-tree-node-content:hover {
+        background-color: #f0fdf4;
+    }
+
+/* PrimeVue Tree & TreeSelect Toggler / Arrow Styling */
+.p-tree .p-tree-toggler,
+.p-treeselect-panel .p-tree-toggler,
+.p-treeselect-panel .p-tree-node-toggle-button {
+    width: 1.65rem !important;
+    height: 1.65rem !important;
+    border-radius: 50% !important;
+    color: #004D25 !important; /* Deep KSA Sovereign Green */
+    background: rgba(0, 77, 37, 0.08) !important;
+    border: 1.5px solid rgba(0, 77, 37, 0.25) !important;
+    margin-right: 0.4rem !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    flex-shrink: 0 !important;
+}
+
+[dir="rtl"] .p-tree .p-tree-toggler,
+[dir="rtl"] .p-treeselect-panel .p-tree-toggler,
+[dir="rtl"] .p-treeselect-panel .p-tree-node-toggle-button {
+    margin-right: 0 !important;
+    margin-left: 0.4rem !important;
+}
+
+.p-tree .p-tree-toggler:hover,
+.p-treeselect-panel .p-tree-toggler:hover,
+.p-treeselect-panel .p-tree-node-toggle-button:hover {
+    color: #ffffff !important;
+    background: #004D25 !important;
+    border-color: #004D25 !important;
+    transform: scale(1.12);
+    box-shadow: 0 2px 8px rgba(0, 77, 37, 0.35) !important;
+}
+
+/* Arrow Icon inside Toggler: extra bold, crisp visibility */
+.p-tree .p-tree-toggler .p-tree-toggler-icon,
+.p-treeselect-panel .p-tree-toggler .p-tree-toggler-icon,
+.p-treeselect-panel .p-tree-toggler svg,
+.p-treeselect-panel .p-tree-node-toggle-button svg {
+    font-size: 0.85rem !important;
+    font-weight: 900 !important;
+    stroke-width: 3px !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+}
+
+/* Tree Node Icons (e.g. Building / Ministry icons) */
+.p-tree-node-icon {
+    color: #0E1E38 !important; /* Midnight Navy */
+    margin-right: 0.45rem !important;
+    font-size: 0.95rem !important;
+}
+
+[dir="rtl"] .p-tree-node-icon {
+    margin-right: 0 !important;
+    margin-left: 0.45rem !important;
+}
+
+/* Tree Node Label */
+.p-tree-node-label {
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #1e293b !important;
+}
+
+/* Tree Node Highlight */
+.p-tree-node-content.p-highlight {
+    background-color: rgba(0, 77, 37, 0.12) !important;
+    color: #004D25 !important;
+    font-weight: 600 !important;
+}
+
+.p-tree-node-content.p-highlight .p-tree-node-label {
+    color: #004D25 !important;
+    font-weight: 700 !important;
+}
+
+/* Empty message */
+.p-treeselect-empty-message {
+    color: #6c757d;
+    text-align: center;
+    padding: 0.75rem;
+    font-style: italic;
+}
+
+/* ========================================================
+   PrimeVue TreeSelect - Full Language Direction (RTL) Support
+   ======================================================== */
+[dir="rtl"] .p-treeselect,
+body.rtl .p-treeselect,
+.p-treeselect[dir="rtl"],
+.p-treeselect.p-rtl {
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+[dir="rtl"] .p-treeselect .p-treeselect-label-container,
+body.rtl .p-treeselect .p-treeselect-label-container,
+.p-treeselect[dir="rtl"] .p-treeselect-label-container,
+.p-treeselect.p-rtl .p-treeselect-label-container {
+    text-align: right !important;
+    padding-right: 0.5rem !important;
+    padding-left: 0.5rem !important;
+}
+
+[dir="rtl"] .p-treeselect .p-treeselect-label,
+body.rtl .p-treeselect .p-treeselect-label,
+.p-treeselect[dir="rtl"] .p-treeselect-label,
+.p-treeselect.p-rtl .p-treeselect-label {
+    text-align: right !important;
+}
+
+[dir="rtl"] .p-treeselect .p-placeholder,
+body.rtl .p-treeselect .p-placeholder,
+.p-treeselect[dir="rtl"] .p-placeholder,
+.p-treeselect.p-rtl .p-placeholder {
+    text-align: right !important;
+}
+
+/* In RTL, dropdown trigger arrow is positioned on the left */
+[dir="rtl"] .p-treeselect .p-treeselect-dropdown,
+body.rtl .p-treeselect .p-treeselect-dropdown,
+.p-treeselect[dir="rtl"] .p-treeselect-dropdown,
+.p-treeselect.p-rtl .p-treeselect-dropdown {
+    order: -1;
+}
+
+/* Clear icon positioned next to dropdown trigger in RTL */
+[dir="rtl"] .p-treeselect .p-select-clear-icon,
+body.rtl .p-treeselect .p-select-clear-icon,
+.p-treeselect[dir="rtl"] .p-select-clear-icon,
+.p-treeselect.p-rtl .p-select-clear-icon {
+    inset-inline-end: auto !important;
+    inset-inline-start: 2rem !important;
+}
+
+/* Overlay Panel in RTL */
+[dir="rtl"] .p-treeselect-panel,
+body.rtl .p-treeselect-panel,
+.p-treeselect-panel.p-rtl,
+.p-treeselect-overlay[dir="rtl"] {
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+[dir="rtl"] .p-treeselect-panel .p-treeselect-filter-container,
+body.rtl .p-treeselect-panel .p-treeselect-filter-container {
+    direction: rtl !important;
+    text-align: right !important;
+    position: relative;
+}
+
+[dir="rtl"] .p-treeselect-panel .p-treeselect-filter,
+body.rtl .p-treeselect-panel .p-treeselect-filter {
+    text-align: right !important;
+    padding-right: 2.25rem !important;
+    padding-left: 0.75rem !important;
+    direction: rtl !important;
+}
+
+[dir="rtl"] .p-treeselect-panel .p-treeselect-filter-icon,
+body.rtl .p-treeselect-panel .p-treeselect-filter-icon {
+    right: 0.75rem !important;
+    left: auto !important;
+}
+
+[dir="rtl"] .p-treeselect-panel .p-tree-node-content,
+body.rtl .p-treeselect-panel .p-tree-node-content {
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+[dir="rtl"] .p-treeselect-panel .p-tree-node-label,
+body.rtl .p-treeselect-panel .p-tree-node-label {
+    text-align: right !important;
+}
+
+/* Table Action Buttons: Borderless & Centered */
+.btn-action-icon,
+.table .p-button-text,
+.table .btn-action {
+    border: none !important;
+    background: transparent;
+    width: 2.1rem;
+    height: 2.1rem;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    box-shadow: none !important;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.table .p-button-text:hover,
+.table .btn-action:hover {
+    transform: scale(1.1);
+}
+
+/* Premium Header with Modern Dark Navy SaaS Gradient */
+.premium-header {
+    background: linear-gradient(135deg, #1A2B45 0%, #101D30 100%) !important;
+    padding: 1.25rem 1.75rem;
+    border-radius: var(--radius-card, 18px);
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 4px 20px rgba(10, 20, 35, 0.08);
+    color: white;
+}
+
+
+/* === SESSION TIMEOUT - FORCE ON TOP OF SIDEBAR & ALL LAYERS === */
+.session-timeout-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(12px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 2147483647 !important; /* Maximum possible z-index */
+    animation: fadeIn 0.4s ease forwards !important;
+    isolation: isolate !important;
+    pointer-events: all !important;
+}
+
+.session-timeout-modal {
+    width: 100% !important;
+    max-width: 520px !important;
+    margin: 20px !important;
+    background: white !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.5) !important;
+    animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+    z-index: 2147483647 !important;
+    position: relative !important;
+}
+
+/* Force all children to high z-index */
+.session-timeout-overlay,
+.session-timeout-overlay * {
+    z-index: 2147483647 !important;
+}
+
+/* Header & Body */
+.modal-header-premium {
+    padding: 1.75rem 1.75rem 1.25rem !important;
+    text-align: center !important;
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+}
+
+.icon-circle {
+    width: 38px;
+    height: 38px;
+    background: rgba(255,255,255,0.25) !important;
+    border: 3.5px solid rgba(255,255,255,0.35) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 2.2rem !important;
+    margin: 0 auto 0.9rem !important;
+}
+
+.modal-body-premium {
+    padding: 2rem 2.25rem 2.25rem !important;
+}
+
+/* Buttons */
+.session-timeout-modal .btn {
+    min-width: 175px !important;
+    padding: 14px 24px !important;
+    font-size: 1.02rem !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalPop {
+    from {
+        opacity: 0;
+        transform: scale(0.75) translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+/* === TIMER CIRCLE - FIXED VERSION === */
+.timer-display {
+    position: relative;
+    width: 170px;
+    height: 170px;
+    margin: 0 auto;
+}
+
+.timer-circle {
+    transform: rotate(-90deg);
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.15));
+}
+
+.timer-circle-bg {
+    fill: none;
+    stroke: #e5e7eb;
+    stroke-width: 14;
+}
+
+.timer-circle-progress {
+    fill: none;
+    stroke: #10b981 !important;
+    stroke-width: 14;
+    stroke-linecap: round;
+    stroke-dasharray: 477.52; /* Updated for new radius */
+    stroke-dashoffset: 477.52;
+    transition: stroke-dashoffset 0.8s linear;
+    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5));
+}
+
+/* 3D Number Effect */
+.timer-value-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.timer-value {
+    font-size: 3.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+    /* 3D Shadow Effect */
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.2), 0 -2px 3px rgba(255, 255, 255, 0.6), 4px 4px 6px rgba(0, 0, 0, 0.15);
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+    /* Optional: Slight press effect when counting */
+    .timer-value:active {
+        transform: scale(0.95);
+    }
+/* Responsive */
+@media (max-width: 576px) {
+    .session-timeout-modal {
+        max-width: 95% !important;
+        margin: 12px !important;
+    }
+}
+
+/* =======================================
+   PrimeVue Accordion - Custom Theme
+   ======================================= */
+.p-accordionpanel-active > .p-accordionheader {
+    background-color: var(--ksa-green) !important;
+    color: #ffffff !important;
+    border-color: var(--ksa-green) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+    .p-accordionpanel-active > .p-accordionheader * {
+        color: #ffffff !important;
+    }
+
+    .p-accordionpanel-active > .p-accordionheader:hover {
+        background-color: var(--ksa-green-dark) !important;
+        border-color: var(--ksa-green-dark) !important;
+    }
+
+.p-accordionheader:focus-visible {
+    box-shadow: 0 0 0 0.2rem rgba(15, 108, 61, 0.25) !important;
+    outline: none !important;
+}
+
+/* Fallback for other versions or structures of PrimeVue Accordion */
+.p-accordion-tab-active > .p-accordion-header > a,
+.p-accordion-tab-active > .p-accordion-header > a * {
+    background-color: var(--ksa-green) !important;
+    color: #ffffff !important;
+    border-color: var(--ksa-green) !important;
+}
+
+    .p-accordion-tab-active > .p-accordion-header > a:hover {
+        background-color: var(--ksa-green-dark) !important;
+        border-color: var(--ksa-green-dark) !important;
+    }
+
+/* === PRIME VUE TOAST OVERLAY LAYER === */
+.p-toast {
+    z-index: 999999 !important;
+}
+
+/* =======================================
+   Modern Dashboard UI Design System
+   ======================================= */
+.card-saas {
+    background: var(--bg-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-subtle);
+    padding: 24px;
+    transition: transform var(--ksa-transition), box-shadow var(--ksa-transition);
+}
+
+.card-saas:hover {
+    box-shadow: var(--shadow-card-hover);
+}
+
+.card-saas-interactive:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+}
+
+.btn-teal-pill {
+    background: var(--accent-primary);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 24px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(23, 133, 99, 0.35);
+    transition: all var(--ksa-transition);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-teal-pill:hover {
+    background: var(--accent-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(23, 133, 99, 0.45);
+}
+
+.btn-teal-pill:active {
+    transform: translateY(0);
+}
+
+.badge-teal {
+    background: rgba(23, 133, 99, 0.15);
+    color: #178563;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+}
+
+.badge-navy {
+    background: rgba(30, 58, 95, 0.1);
+    color: var(--accent-navy);
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+}
+
+.badge-blue {
+    background: rgba(59, 111, 229, 0.1);
+    color: var(--accent-secondary);
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+}
+
+.stat-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.stat-item-row:last-child {
+    border-bottom: none;
+}
+
+.stat-item-label {
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-item-value {
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+/* === Global Buttons Consistency === */
+.btn-primary {
+    background-color: var(--accent-primary) !important;
+    border-color: var(--accent-primary) !important;
+    color: #ffffff !important;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all var(--ksa-transition);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-primary-hover) !important;
+    border-color: var(--accent-primary-hover) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(23, 133, 99, 0.35);
+}
+
+.btn-outline-primary {
+    color: var(--accent-navy) !important;
+    border-color: var(--border-subtle) !important;
+    background: #ffffff !important;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all var(--ksa-transition);
+}
+
+.btn-outline-primary:hover {
+    background-color: #EAF2FB !important;
+    border-color: #cbd5e1 !important;
+    color: var(--accent-navy) !important;
+    transform: translateY(-1px);
+}
+
+/* === Global Tables Consistency === */
+.table {
+    border-color: var(--border-subtle) !important;
+}
+
+.table thead th {
+    background-color: #F6FAFD !important;
+    color: var(--accent-navy) !important;
+    font-weight: 700 !important;
+    font-size: 0.8125rem !important;
+    border-bottom: 2px solid var(--border-subtle) !important;
+    padding: 12px 16px !important;
+}
+
+.table tbody td {
+    padding: 14px 16px !important;
+    vertical-align: middle !important;
+    border-color: var(--border-subtle) !important;
+}
+
+/* === Form Controls Consistency === */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 0 3px rgba(23, 133, 99, 0.20) !important;
+}
+
+/* === Global Pagination Consistency === */
+.pagination {
+    gap: 6px;
+}
+
+.pagination .page-item .page-link {
+    border-radius: 10px !important;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    background: #ffffff;
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all var(--ksa-transition);
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #EAF2FB;
+    border-color: #cbd5e1;
+    color: var(--accent-navy);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--accent-primary) !important;
+    border-color: var(--accent-primary) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(23, 133, 99, 0.35);
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: #F6FAFD;
+    color: #cbd5e1;
+    border-color: var(--border-subtle);
+}
+
+/* ── Unified Sovereign SVG Loader ────────────── */
+.aarkam-loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.aarkam-loader-svg .orbit-outer,
+.orbit-outer {
+    transform-origin: 60px 60px;
+    animation: spinClockwise 7s linear infinite;
+}
+
+.aarkam-loader-svg .orbit-mid,
+.orbit-mid {
+    transform-origin: 60px 60px;
+    animation: spinCounter 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.aarkam-loader-svg .orbit-inner,
+.orbit-inner {
+    transform-origin: 60px 60px;
+    animation: spinClockwise 2.8s ease-in-out infinite;
+}
+
+.aarkam-loader-svg .core-pulse,
+.core-pulse {
+    transform-origin: 60px 60px;
+    animation: pulseCircle 2s ease-in-out infinite alternate;
+}
+
+@keyframes spinClockwise {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes spinCounter {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-180deg); }
+    100% { transform: rotate(-360deg); }
+}
+
+@keyframes pulseCircle {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.8;
+        fill: #006C35;
+    }
+    50% {
+        fill: #2ECC9B;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 1;
+        fill: #3B6FE5;
+    }
+}

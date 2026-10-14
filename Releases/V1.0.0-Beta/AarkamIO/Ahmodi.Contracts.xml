@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Ahmodi.Contracts</name>
+    </assembly>
+    <members>
+        <member name="T:Ahmodi.Contracts.ChunkRole">
+            <summary>
+            Defines the functional role of a chunk within an erasure-coded stripe.
+            </summary>
+        </member>
+        <member name="F:Ahmodi.Contracts.ChunkRole.Data">
+            <summary>
+            The chunk contains original, contiguous user payload bytes.
+            </summary>
+        </member>
+        <member name="F:Ahmodi.Contracts.ChunkRole.Parity">
+            <summary>
+            The chunk contains Cauchy Reed-Solomon parity bytes computed across the data chunks.
+            </summary>
+        </member>
+        <member name="T:Ahmodi.Contracts.IAhmodiCodec">
+            <summary>
+            Defines the contract for Cauchy Reed-Solomon erasure coding operations, providing
+            hardware-accelerated stripe encoding and mathematical payload reconstruction across arbitrary chunk erasure patterns.
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.IAhmodiCodec.Layout">
+            <summary>
+            Gets the geometric layout parameters governing this codec instance (K data chunks, M parity chunks, and chunk byte size).
+            </summary>
+        </member>
+        <member name="M:Ahmodi.Contracts.IAhmodiCodec.EncodeStripe(System.ReadOnlySpan{System.ReadOnlyMemory{System.Byte}},System.Span{System.Memory{System.Byte}})">
+            <summary>
+            Encodes a full stripe of K data chunks, generating M Cauchy Reed-Solomon parity chunks into the destination buffers.
+            </summary>
+            <param name="dataChunks">The K input data chunks, each of length <see cref="P:Ahmodi.Contracts.StripeLayout.ChunkSizeBytes"/>.</param>
+            <param name="parityChunks">The M destination buffers to receive the computed parity chunks, each of length <see cref="P:Ahmodi.Contracts.StripeLayout.ChunkSizeBytes"/>.</param>
+            <exception cref="T:System.ArgumentException">Thrown if spans have incorrect lengths or buffer sizes do not match <see cref="P:Ahmodi.Contracts.StripeLayout.ChunkSizeBytes"/>.</exception>
+        </member>
+        <member name="M:Ahmodi.Contracts.IAhmodiCodec.Reconstruct(System.ReadOnlySpan{System.ReadOnlyMemory{System.Byte}},System.ReadOnlySpan{System.Int32},System.Span{System.Memory{System.Byte}},System.ReadOnlySpan{System.Int32})">
+            <summary>
+            Reconstructs missing chunk payloads from an arbitrary subset of surviving chunks.
+            </summary>
+            <param name="survivingChunks">The surviving chunks available for recovery (must contain at least K chunks).</param>
+            <param name="survivingIndices">The 0-based stripe indices of each corresponding surviving chunk in <paramref name="survivingChunks"/>.</param>
+            <param name="targetChunks">Destination buffers to receive the reconstructed chunk payloads.</param>
+            <param name="targetIndices">The 0-based stripe indices of each target chunk to reconstruct in <paramref name="targetChunks"/>.</param>
+            <exception cref="T:System.ArgumentException">Thrown if fewer than K surviving chunks are provided, or if indices are invalid or duplicate.</exception>
+        </member>
+        <member name="T:Ahmodi.Contracts.StripeDescriptor">
+            <summary>
+            Immutable metadata descriptor encapsulating the placement and cryptographic integrity verification attributes
+            of an individual erasure-coded chunk belonging to a specific stripe.
+            </summary>
+            <param name="StripeId">The unique identifier of the parent stripe.</param>
+            <param name="StripeIndex">The sequential ordinal index of this stripe within the partitioned object.</param>
+            <param name="ChunkIndex">The zero-based index of this chunk within the stripe (0 to K+M-1).</param>
+            <param name="Role">The functional role of this chunk (<see cref="F:Ahmodi.Contracts.ChunkRole.Data"/> or <see cref="F:Ahmodi.Contracts.ChunkRole.Parity"/>).</param>
+            <param name="ChecksumCrc32">The 32-bit CRC or verification checksum of the chunk payload.</param>
+            <param name="PayloadSizeBytes">The actual valid payload length in bytes stored within this chunk.</param>
+            <param name="Layout">The geometric layout parameters governing the stripe.</param>
+        </member>
+        <member name="M:Ahmodi.Contracts.StripeDescriptor.#ctor(System.Guid,System.Int32,System.Int32,Ahmodi.Contracts.ChunkRole,System.UInt32,System.Int32,Ahmodi.Contracts.StripeLayout)">
+            <summary>
+            Immutable metadata descriptor encapsulating the placement and cryptographic integrity verification attributes
+            of an individual erasure-coded chunk belonging to a specific stripe.
+            </summary>
+            <param name="StripeId">The unique identifier of the parent stripe.</param>
+            <param name="StripeIndex">The sequential ordinal index of this stripe within the partitioned object.</param>
+            <param name="ChunkIndex">The zero-based index of this chunk within the stripe (0 to K+M-1).</param>
+            <param name="Role">The functional role of this chunk (<see cref="F:Ahmodi.Contracts.ChunkRole.Data"/> or <see cref="F:Ahmodi.Contracts.ChunkRole.Parity"/>).</param>
+            <param name="ChecksumCrc32">The 32-bit CRC or verification checksum of the chunk payload.</param>
+            <param name="PayloadSizeBytes">The actual valid payload length in bytes stored within this chunk.</param>
+            <param name="Layout">The geometric layout parameters governing the stripe.</param>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeDescriptor.StripeId">
+            <summary>The unique identifier of the parent stripe.</summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeDescriptor.StripeIndex">
+            <summary>The sequential ordinal index of this stripe within the partitioned object.</summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeDescriptor.ChunkIndex">
+            <summary>The zero-based index of this chunk within the stripe (0 to K+M-1).</summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeDescriptor.Role">
+            <summary>The functional role of this chunk (<see cref="F:Ahmodi.Contracts.ChunkRole.Data"/> or <see cref="F:Ahmodi.Contracts.ChunkRole.Parity"/>).</summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeDescriptor.ChecksumCrc32">
+            <summary>The 32-bit CRC or verification checksum of the chunk payload.</summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeDescriptor.PayloadSizeBytes">
+            <summary>The actual valid payload length in bytes stored within this chunk.</summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeDescriptor.Layout">
+            <summary>The geometric layout parameters governing the stripe.</summary>
+        </member>
+        <member name="T:Ahmodi.Contracts.StripeLayout">
+            <summary>
+            Defines the structural geometric layout of an erasure-coded stripe, including data chunks (K),
+            parity chunks (M), and the individual chunk payload size.
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.DataChunks">
+            <summary>
+            Gets the number of original user data chunks (K).
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.ParityChunks">
+            <summary>
+            Gets the number of Cauchy Reed-Solomon parity chunks (M).
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.ChunkSizeBytes">
+            <summary>
+            Gets the exact byte length of each individual chunk payload within the stripe.
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.TotalChunks">
+            <summary>
+            Gets the total number of chunks (K + M) comprising a complete stripe.
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.StripeDataSizeBytes">
+            <summary>
+            Gets the aggregate user data capacity in bytes of the stripe (K * ChunkSizeBytes).
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.TotalStripeSizeBytes">
+            <summary>
+            Gets the total storage footprint in bytes consumed by the complete stripe across the cluster ((K + M) * ChunkSizeBytes).
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.StorageEfficiency">
+            <summary>
+            Gets the effective storage efficiency ratio (K / (K + M)).
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.FaultTolerance">
+            <summary>
+            Gets the maximum number of concurrent chunk or node failures that can be tolerated without data loss (M).
+            </summary>
+        </member>
+        <member name="M:Ahmodi.Contracts.StripeLayout.#ctor(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ahmodi.Contracts.StripeLayout"/> struct with validated parameters.
+            </summary>
+            <param name="dataChunks">The number of data chunks (K). Must be positive.</param>
+            <param name="parityChunks">The number of parity chunks (M). Must be positive.</param>
+            <param name="chunkSizeBytes">The byte length of each chunk. Must be positive.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown when <paramref name="dataChunks"/> or <paramref name="parityChunks"/> are non-positive,
+            when their sum exceeds 256 (the maximum field capacity of GF(2^8)), or when <paramref name="chunkSizeBytes"/> is non-positive.
+            </exception>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.Standard4Plus2">
+            <summary>
+            Standard production profile: 4 Data + 2 Parity (1 MB chunk size, 66.7% efficiency, survives 2 failures).
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.Archival8Plus3">
+            <summary>
+            Archival balanced profile: 8 Data + 3 Parity (1 MB chunk size, 72.7% efficiency, survives 3 failures).
+            </summary>
+        </member>
+        <member name="P:Ahmodi.Contracts.StripeLayout.ColdStorage16Plus4">
+            <summary>
+            Cold storage high-efficiency profile: 16 Data + 4 Parity (1 MB chunk size, 80.0% efficiency, survives 4 failures).
+            </summary>
+        </member>
+    </members>
+</doc>

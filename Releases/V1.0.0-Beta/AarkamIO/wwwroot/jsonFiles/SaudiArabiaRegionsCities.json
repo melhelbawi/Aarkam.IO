@@ -1,0 +1,634 @@
+[
+	{
+		"Name": "منطقة الرياض",
+		"NameEn": "Riyadh Province",
+		"Cities": [
+			{
+				"Name": "الرياض",
+				"NameEn": "Riyadh"
+			},
+			{
+				"Name": "الدرعية",
+				"NameEn": "Ad Diriyah"
+			},
+			{
+				"Name": "الخرج",
+				"NameEn": "Al Kharj"
+			},
+			{
+				"Name": "الدوادمي",
+				"NameEn": "Ad Duwadimi"
+			},
+			{
+				"Name": "المجمعة",
+				"NameEn": "Al Majma'ah"
+			},
+			{
+				"Name": "القويعية",
+				"NameEn": "Al Qweiyah"
+			},
+			{
+				"Name": "الأفلاج",
+				"NameEn": "Al Aflaj"
+			},
+			{
+				"Name": "وادي الدواسر",
+				"NameEn": "Wadi ad Dawasir"
+			},
+			{
+				"Name": "الزلفي",
+				"NameEn": "Az Zulfi"
+			},
+			{
+				"Name": "شقراء",
+				"NameEn": "Shaqrā'"
+			},
+			{
+				"Name": "حوطة بني تميم",
+				"NameEn": "Hautat Bani Tamim"
+			},
+			{
+				"Name": "عفيف",
+				"NameEn": "Afif"
+			},
+			{
+				"Name": "الغاط",
+				"NameEn": "Al Ghāt"
+			},
+			{
+				"Name": "السليل",
+				"NameEn": "As Sulayyil"
+			},
+			{
+				"Name": "ضرما",
+				"NameEn": "Dhurma"
+			},
+			{
+				"Name": "المزاحمية",
+				"NameEn": "Al Mizahmiyah"
+			},
+			{
+				"Name": "رماح",
+				"NameEn": "Rumah"
+			},
+			{
+				"Name": "ثادق",
+				"NameEn": "Thadiq"
+			},
+			{
+				"Name": "حريملاء",
+				"NameEn": "Huraimilā'"
+			},
+			{
+				"Name": "الحريق",
+				"NameEn": "Al Hariq"
+			},
+			{
+				"Name": "مرات",
+				"NameEn": "Mārat"
+			}
+		]
+	},
+	{
+		"Name": "منطقة مكة المكرمة",
+		"NameEn": "Mecca Province",
+		"Cities": [
+			{
+				"Name": "مكة المكرمة",
+				"NameEn": "Mecca"
+			},
+			{
+				"Name": "جدة",
+				"NameEn": "Jeddah"
+			},
+			{
+				"Name": "الطائف",
+				"NameEn": "Ta'if"
+			},
+			{
+				"Name": "القنفذة",
+				"NameEn": "Al Qunfudhah"
+			},
+			{
+				"Name": "الليث",
+				"NameEn": "Al Lith"
+			},
+			{
+				"Name": "رابغ",
+				"NameEn": "Rabigh"
+			},
+			{
+				"Name": "خليص",
+				"NameEn": "Khulays"
+			},
+			{
+				"Name": "الخرمة",
+				"NameEn": "Al Kharmā"
+			},
+			{
+				"Name": "رنية",
+				"NameEn": "Raniyah"
+			},
+			{
+				"Name": "تربة",
+				"NameEn": "Turbah"
+			},
+			{
+				"Name": "الجموم",
+				"NameEn": "Al Jamūm"
+			},
+			{
+				"Name": "الكامل",
+				"NameEn": "Al Kāmil"
+			},
+			{
+				"Name": "المويه",
+				"NameEn": "Al Muwayh"
+			},
+			{
+				"Name": "ميسان",
+				"NameEn": "Maysan"
+			},
+			{
+				"Name": "أضم",
+				"NameEn": "Adham"
+			},
+			{
+				"Name": "العرضيات",
+				"NameEn": "Al 'Ardiyah"
+			},
+			{
+				"Name": "بحرة",
+				"NameEn": "Bahrā"
+			}
+		]
+	},
+	{
+		"Name": "منطقة المدينة المنورة",
+		"NameEn": "Medina Province",
+		"Cities": [
+			{
+				"Name": "المدينة المنورة",
+				"NameEn": "Medina"
+			},
+			{
+				"Name": "ينبع",
+				"NameEn": "Yanbu"
+			},
+			{
+				"Name": "العلا",
+				"NameEn": "Al Ula"
+			},
+			{
+				"Name": "المهد",
+				"NameEn": "Al Mahd"
+			},
+			{
+				"Name": "الحناكية",
+				"NameEn": "Al Hanākīyah"
+			},
+			{
+				"Name": "بدر",
+				"NameEn": "Badr"
+			},
+			{
+				"Name": "خيبر",
+				"NameEn": "Khaybar"
+			},
+			{
+				"Name": "العيص",
+				"NameEn": "Al 'Ays"
+			},
+			{
+				"Name": "وادي الفرع",
+				"NameEn": "Wadi al Fara'"
+			}
+		]
+	},
+	{
+		"Name": "منطقة القصيم",
+		"NameEn": "Al-Qassim Province",
+		"Cities": [
+			{
+				"Name": "بريدة",
+				"NameEn": "Buraidah"
+			},
+			{
+				"Name": "عنيزة",
+				"NameEn": "Unaizah"
+			},
+			{
+				"Name": "الرس",
+				"NameEn": "Ar Rass"
+			},
+			{
+				"Name": "المذنب",
+				"NameEn": "Al Mudhhib"
+			},
+			{
+				"Name": "البكيرية",
+				"NameEn": "Al Bukayriyah"
+			},
+			{
+				"Name": "البدائع",
+				"NameEn": "Al Badai'"
+			},
+			{
+				"Name": "الأسياح",
+				"NameEn": "Al Asyah"
+			},
+			{
+				"Name": "النبهانية",
+				"NameEn": "An Nabhaniyah"
+			},
+			{
+				"Name": "الشماسية",
+				"NameEn": "Ash Shamasiyah"
+			},
+			{
+				"Name": "عيون الجواء",
+				"NameEn": "Uyūn al Jawā"
+			},
+			{
+				"Name": "رياض الخبراء",
+				"NameEn": "Riyāḍ al Khabrā'"
+			},
+			{
+				"Name": "عقلة الصقور",
+				"NameEn": "Uqlat as Suqūr"
+			},
+			{
+				"Name": "ضرية",
+				"NameEn": "Dhariyah"
+			}
+		]
+	},
+	{
+		"Name": "المنطقة الشرقية",
+		"NameEn": "Eastern Province",
+		"Cities": [
+			{
+				"Name": "الدمام",
+				"NameEn": "Dammam"
+			},
+			{
+				"Name": "الأحساء",
+				"NameEn": "Al Ahsa"
+			},
+			{
+				"Name": "حفر الباطن",
+				"NameEn": "Hafar Al-Batin"
+			},
+			{
+				"Name": "الجبيل",
+				"NameEn": "Jubail"
+			},
+			{
+				"Name": "القطيف",
+				"NameEn": "Qatif"
+			},
+			{
+				"Name": "الخبر",
+				"NameEn": "Khobar"
+			},
+			{
+				"Name": "الخفجي",
+				"NameEn": "Khafji"
+			},
+			{
+				"Name": "رأس تنورة",
+				"NameEn": "Ras Tanura"
+			},
+			{
+				"Name": "بقيق",
+				"NameEn": "Buqayq"
+			},
+			{
+				"Name": "النعيرية",
+				"NameEn": "An Nairyah"
+			},
+			{
+				"Name": "قرية العليا",
+				"NameEn": "Qaryat al 'Ulyā"
+			},
+			{
+				"Name": "العديد",
+				"NameEn": "Al Udayd"
+			}
+		]
+	},
+	{
+		"Name": "منطقة عسير",
+		"NameEn": "Asir Province",
+		"Cities": [
+			{
+				"Name": "أبها",
+				"NameEn": "Abha"
+			},
+			{
+				"Name": "خميس مشيط",
+				"NameEn": "Khamis Mushait"
+			},
+			{
+				"Name": "بيشة",
+				"NameEn": "Bisha"
+			},
+			{
+				"Name": "النماص",
+				"NameEn": "An Nāmāş"
+			},
+			{
+				"Name": "محايل عسير",
+				"NameEn": "Mahayil 'Asir"
+			},
+			{
+				"Name": "ظهران الجنوب",
+				"NameEn": "Dhahran al Janub"
+			},
+			{
+				"Name": "تثليث",
+				"NameEn": "Tathlith"
+			},
+			{
+				"Name": "سراة عبيدة",
+				"NameEn": "Sarāt 'Ubaydah"
+			},
+			{
+				"Name": "رجال ألمع",
+				"NameEn": "Rijāl al 'Alam"
+			},
+			{
+				"Name": "بلقرن",
+				"NameEn": "Balqarn"
+			},
+			{
+				"Name": "أحد رفيدة",
+				"NameEn": "Ahad Rafidah"
+			},
+			{
+				"Name": "المجاردة",
+				"NameEn": "Al Majardah"
+			},
+			{
+				"Name": "البرك",
+				"NameEn": "Al Barik"
+			},
+			{
+				"Name": "بارق",
+				"NameEn": "Barq"
+			},
+			{
+				"Name": "تنومة",
+				"NameEn": "Tanūmah"
+			},
+			{
+				"Name": "طريب",
+				"NameEn": "Turayb"
+			}
+		]
+	},
+	{
+		"Name": "منطقة تبوك",
+		"NameEn": "Tabuk Province",
+		"Cities": [
+			{
+				"Name": "تبوك",
+				"NameEn": "Tabuk"
+			},
+			{
+				"Name": "الوجه",
+				"NameEn": "Al Wajh"
+			},
+			{
+				"Name": "ضباء",
+				"NameEn": "Duba"
+			},
+			{
+				"Name": "تيماء",
+				"NameEn": "Tayma"
+			},
+			{
+				"Name": "أملج",
+				"NameEn": "Amlaj"
+			},
+			{
+				"Name": "حقل",
+				"NameEn": "Haql"
+			},
+			{
+				"Name": "البدع",
+				"NameEn": "Al Bad'"
+			}
+		]
+	},
+	{
+		"Name": "منطقة حائل",
+		"NameEn": "Hail Province",
+		"Cities": [
+			{
+				"Name": "حائل",
+				"NameEn": "Hail"
+			},
+			{
+				"Name": "بقعاء",
+				"NameEn": "Baq'a"
+			},
+			{
+				"Name": "الغزالة",
+				"NameEn": "Al Ghazalah"
+			},
+			{
+				"Name": "الشنان",
+				"NameEn": "Ash Shanān"
+			},
+			{
+				"Name": "الحائط",
+				"NameEn": "Al Hait"
+			},
+			{
+				"Name": "السليمي",
+				"NameEn": "As Sulaymi"
+			},
+			{
+				"Name": "الشملي",
+				"NameEn": "Ash Shumayli"
+			},
+			{
+				"Name": "موقق",
+				"NameEn": "Mawqiq"
+			},
+			{
+				"Name": "سميراء",
+				"NameEn": "Samitah"
+			}
+		]
+	},
+	{
+		"Name": "منطقة الحدود الشمالية",
+		"NameEn": "Northern Borders Province",
+		"Cities": [
+			{
+				"Name": "عرعر",
+				"NameEn": "Arar"
+			},
+			{
+				"Name": "رفحاء",
+				"NameEn": "Rafha"
+			},
+			{
+				"Name": "طريف",
+				"NameEn": "Turaif"
+			},
+			{
+				"Name": "العويقيلة",
+				"NameEn": "Al 'Uwayqilah"
+			}
+		]
+	},
+	{
+		"Name": "منطقة جازان",
+		"NameEn": "Jazan Province",
+		"Cities": [
+			{
+				"Name": "جازان",
+				"NameEn": "Jazan"
+			},
+			{
+				"Name": "صبيا",
+				"NameEn": "Sabya"
+			},
+			{
+				"Name": "أبو عريش",
+				"NameEn": "Abu 'Arish"
+			},
+			{
+				"Name": "صامطة",
+				"NameEn": "Samitah"
+			},
+			{
+				"Name": "بيش",
+				"NameEn": "Baysh"
+			},
+			{
+				"Name": "الدرب",
+				"NameEn": "Ad Durb"
+			},
+			{
+				"Name": "الحرث",
+				"NameEn": "Al Harth"
+			},
+			{
+				"Name": "ضمد",
+				"NameEn": "Damad"
+			},
+			{
+				"Name": "الريث",
+				"NameEn": "Ar Rayth"
+			},
+			{
+				"Name": "فرسان",
+				"NameEn": "Farsan"
+			},
+			{
+				"Name": "الدائر",
+				"NameEn": "Ad Da'ir"
+			},
+			{
+				"Name": "العارضة",
+				"NameEn": "Al 'Arouda"
+			},
+			{
+				"Name": "أحد المسارحة",
+				"NameEn": "Ahad Masarihah"
+			},
+			{
+				"Name": "العيدابي",
+				"NameEn": "Al 'Aydabi"
+			},
+			{
+				"Name": "فيفاء",
+				"NameEn": "Fife"
+			},
+			{
+				"Name": "الطوال",
+				"NameEn": "At Tuwal"
+			},
+			{
+				"Name": "هروب",
+				"NameEn": "Hurayb"
+			}
+		]
+	},
+	{
+		"Name": "منطقة نجران",
+		"NameEn": "Najran Province",
+		"Cities": [
+			{
+				"Name": "نجران",
+				"NameEn": "Najran"
+			},
+			{
+				"Name": "شرورة",
+				"NameEn": "Sharurah"
+			},
+			{
+				"Name": "حبونا",
+				"NameEn": "Habuna"
+			},
+			{
+				"Name": "بدر الجنوب",
+				"NameEn": "Badr al Janub"
+			},
+			{
+				"Name": "يدمة",
+				"NameEn": "Yadamah"
+			},
+			{
+				"Name": "ثار",
+				"NameEn": "Thar"
+			},
+			{
+				"Name": "خباش",
+				"NameEn": "Khabash"
+			}
+		]
+	},
+	{
+		"Name": "منطقة الباحة",
+		"NameEn": "Al-Baha Province",
+		"Cities": [
+			{
+				"Name": "الباحة",
+				"NameEn": "Al Baha"
+			},
+			{
+				"Name": "بلجرشي",
+				"NameEn": "Baljurashi"
+			},
+			{
+				"Name": "المندق",
+				"NameEn": "Al Mindak"
+			},
+			{
+				"Name": "المخواة",
+				"NameEn": "Al Mikhwah"
+			},
+			{
+				"Name": "قلوة",
+				"NameEn": "Qalwah"
+			},
+			{
+				"Name": "العقيق",
+				"NameEn": "Al 'Uqayq"
+			},
+			{
+				"Name": "القرى",
+				"NameEn": "Al Qarah"
+			},
+			{
+				"Name": "غامد الزناد",
+				"NameEn": "Ghamid Zanad"
+			}
+		]
+	}
+]

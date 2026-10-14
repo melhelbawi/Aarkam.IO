@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  //"name": "Aarkam Sovereign Storage Platform",
+  "short_name": "Aarkam",
+  "description": "Next-generation sovereign enterprise object storage, cryptographic licensing, and multi-region telemetry.",
+  "id": "/?source=pwa",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "lang": "en",
+  "dir": "auto",
+  "background_color": "#0E1E38",
+  "theme_color": "#004D25",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "author": "Mohamed Elhelbawi",
+  "team": "AarkamIO",
+  "developer": {
+    "name": "Mohamed Elhelbawi",
+    "team": "AarkamIO"
+  },
+  "icons": [
+    {
+      "src": "/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/aarkam-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Object Storage",
+      "short_name": "Buckets",
+      "description": "View and manage storage buckets and encrypted objects",
+      "url": "/StorageObjects",
+      "icons": [
+        {
+          "src": "/icons/icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Cluster Monitoring",
+      "short_name": "Monitoring",
+      "description": "Cluster health, telemetry metrics, and real-time alerts",
+      "url": "/Monitoring",
+      "icons": [
+        {
+          "src": "/icons/icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Cluster Metering",
+      "short_name": "Metering",
+      "description": "Resource consumption, storage metrics, and bandwidth showback",
+      "url": "/Metering",
+      "icons": [
+        {
+          "src": "/icons/icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Cluster License",
+      "short_name": "Licensing",
+      "description": "Cryptographic license verification and capacity entitlements",
+      "url": "/Licensing",
+      "icons": [
+        {
+          "src": "/icons/icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
